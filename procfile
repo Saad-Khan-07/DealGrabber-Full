@@ -1,0 +1,1 @@
+web: python dealgrabber-app/app.py
