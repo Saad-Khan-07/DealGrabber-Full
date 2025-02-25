@@ -174,4 +174,4 @@ def delete_product():
     return render_template("delete_product.html")  # Renders delete request page
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
