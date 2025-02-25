@@ -1,15 +1,15 @@
-from deal.app import ProductInfo
-from deal.avaliablility_handler import CheckAvailability
-from deal.price_handler import HandlePrice
-from deal.mail_notification import ConfirmationMail
-from deal.db import DatabaseHandler
+from dealgrabber.deal.app import ProductInfo
+from dealgrabber.deal.avaliablility_handler import CheckAvailability
+from dealgrabber.deal.price_handler import HandlePrice
+from dealgrabber.deal.mail_notification import ConfirmationMail
+from dealgrabber.deal.db import DatabaseHandler
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 import argparse
 import sys
 import json
 
-def search_product(product_name=None):
+def search_product_run(product_name=None):
     """
     Search for product and return product information
     If product_name is provided, use it instead of asking user
@@ -123,7 +123,7 @@ if __name__ == "__main__":
         args = parse_arguments()
         
         if args.command == 'search':
-            search_product(args.product_name)
+            search_product_run(args.product_name)
         elif args.command == 'availability':
             check_availability(args.link, args.shoesize, args.email)
         elif args.command == 'price':

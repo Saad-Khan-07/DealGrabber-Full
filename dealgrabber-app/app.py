@@ -1,26 +1,21 @@
 import sys
 import os
-
 # Add the `DealGrabber` directory to Python's search path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from flask import Flask, render_template, request, redirect, url_for, session
+from dealgrabber.deal.db import DatabaseHandler
+from flask import Flask, jsonify, render_template, request, redirect, url_for, session
 import psycopg2
-import subprocess
-import json
-import os
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from dealgrabber.deal.app import ProductInfo
+from dealgrabber.run import search_product_run, check_availability, check_price  # ✅ Make sure this function exists in `run.py`
 
 app = Flask(__name__)
-app.secret_key = "your_secret_key"  # Needed for session
+app.secret_key = "ulfxecirdrwngcqt"  # Needed for session
 
 # PostgreSQL Connection
 DATABASE_URL = "postgresql://postgres:GUKqWbRSZZPXlHzPZXWiGgfpvszUsvVq@trolley.proxy.rlwy.net:41936/railway"
-
-# Path to run.py
-RUN_PY_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'dealgrabber', 'run.py')
 
 def get_db_connection():
     return psycopg2.connect(DATABASE_URL)
@@ -29,8 +24,9 @@ def get_db_connection():
 def home():
     return render_template("index.html")  # Homepage
 
+
 @app.route("/search-product", methods=["GET", "POST"])
-def search_product():
+def search_product_route():  # Renamed to avoid recursion error
     if request.method == "POST":
         product_name = request.form.get("product_name", "").strip()
         email = request.form.get("email", "").strip()
@@ -39,19 +35,8 @@ def search_product():
         session["email"] = email
 
         try:
-            # ✅ Call run.py with search command
-            cmd = [
-                "python", RUN_PY_PATH, "search",
-                "--product_name", product_name
-            ]
-            process = subprocess.run(cmd, capture_output=True, text=True)
-
-            if process.returncode != 0:
-                raise Exception(f"Error running script: {process.stderr}")
-
-            # ✅ Parse JSON output from run.py
-            output_lines = process.stdout.strip().split("\n")
-            info_dict = json.loads(output_lines[-1])  # Last line should be JSON
+            # ✅ Call the function directly instead of subprocess
+            info_dict = search_product_run(product_name)  
 
             # ✅ Always return a **single** link
             if "link" in info_dict:
@@ -62,7 +47,7 @@ def search_product():
             return render_template("error.html", error="No valid product link found. Please refine your search.")
 
         except Exception as e:
-            return render_template("error.html", error=str(e))
+            return jsonify({"error": str(e)}), 500  # Only one return statement
 
     return render_template("search_product.html")  # Renders search form
 
@@ -103,25 +88,10 @@ def add_availability():
         product_link = request.form["product_link"]
         shoesize = request.form.get("shoesize", "0")  # Optional field
 
-        # Execute availability check using run.py
         try:
-            # Call run.py with availability command
-            cmd = [
-                'python', RUN_PY_PATH, 'availability',
-                '--link', product_link,
-                '--shoesize', shoesize,
-                '--email', email
-            ]
-            
-            process = subprocess.run(cmd, capture_output=True, text=True)
-            
-            if process.returncode != 0:
-                raise Exception(f"Error running script: {process.stderr}")
-            
-            # Parse JSON output from the script
-            output_lines = process.stdout.strip().split('\n')
-            dataset = json.loads(output_lines[-1])  # Last line should be JSON
-            
+            # ✅ Call `check_availability` directly instead of using subprocess
+            dataset = check_availability(product_link, shoesize, email)
+
             # Store in PostgreSQL database as well
             conn = get_db_connection()
             cursor = conn.cursor()
@@ -132,19 +102,21 @@ def add_availability():
             conn.commit()
             cursor.close()
             conn.close()
-            
+
             return render_template("confirmation.html", message="Your availability notification has been set up!")
         except Exception as e:
             return render_template("error.html", error=str(e))
 
     # GET request - prepopulate form with session data
-    product_info = session.get('product_info', {})
-    email = session.get('email', '')
-    
-    return render_template("add_availability.html", 
-                          product_link=product_info.get('link', ''),
-                          shoesize=product_info.get('shoesize', ''),
-                          email=email)
+    product_info = session.get("product_info", {})
+    email = session.get("email", "")
+
+    return render_template(
+        "add_availability.html",
+        product_link=product_info.get("link", ""),
+        shoesize=product_info.get("shoesize", ""),
+        email=email,
+    )
 
 # 📌 Route for adding a product for price notification
 @app.route("/add-price", methods=["GET", "POST"])
@@ -155,26 +127,10 @@ def add_price():
         target_price = request.form["target_price"]
         shoesize = request.form.get("shoesize", "0")  # Optional field
 
-        # Execute price check using run.py
         try:
-            # Call run.py with price command
-            cmd = [
-                'python', RUN_PY_PATH, 'price',
-                '--link', product_link,
-                '--shoesize', shoesize,
-                '--target_price', target_price,
-                '--email', email
-            ]
-            
-            process = subprocess.run(cmd, capture_output=True, text=True)
-            
-            if process.returncode != 0:
-                raise Exception(f"Error running script: {process.stderr}")
-            
-            # Parse JSON output from the script
-            output_lines = process.stdout.strip().split('\n')
-            dataset = json.loads(output_lines[-1])  # Last line should be JSON
-            
+            # ✅ Call `check_price` directly instead of using subprocess
+            dataset = check_price(product_link, shoesize, target_price, email)
+
             # Store in PostgreSQL database as well
             conn = get_db_connection()
             cursor = conn.cursor()
@@ -185,20 +141,21 @@ def add_price():
             conn.commit()
             cursor.close()
             conn.close()
-            
+
             return render_template("confirmation.html", message="Your price notification has been set up!")
         except Exception as e:
             return render_template("error.html", error=str(e))
 
     # GET request - prepopulate form with session data
-    product_info = session.get('product_info', {})
-    email = session.get('email', '')
-    
-    return render_template("add_price.html", 
-                          product_link=product_info.get('link', ''),
-                          shoesize=product_info.get('shoesize', ''),
-                          email=email)
+    product_info = session.get("product_info", {})
+    email = session.get("email", "")
 
+    return render_template(
+        "add_price.html",
+        product_link=product_info.get("link", ""),
+        shoesize=product_info.get("shoesize", ""),
+        email=email,
+    )
 # 📌 Route for deleting a product notification
 @app.route("/delete-product", methods=["GET", "POST"])
 def delete_product():
@@ -206,19 +163,13 @@ def delete_product():
         email = request.form["email"]
         product_link = request.form["product_link"]
 
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute("""
-            DELETE FROM availability_requests WHERE email = %s AND product_link = %s
-        """, (email, product_link))
-        cursor.execute("""
-            DELETE FROM price_requests WHERE email = %s AND product_link = %s
-        """, (email, product_link))
-        conn.commit()
-        cursor.close()
-        conn.close()
+        try:
+            db_handler = DatabaseHandler()  # ✅ Initialize Database Handler
+            db_handler.delete_request(email, product_link)  # ✅ Call delete function
 
-        return redirect(url_for("home"))
+            return render_template("confirmation.html", message="Your product notification has been removed.")
+        except Exception as e:
+            return render_template("error.html", error=str(e))
 
     return render_template("delete_product.html")  # Renders delete request page
 

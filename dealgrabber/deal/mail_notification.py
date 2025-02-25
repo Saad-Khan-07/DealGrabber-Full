@@ -1,8 +1,8 @@
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from deal.avaliablility_handler import CheckAvailability
-from deal.price_handler import HandlePrice
+from dealgrabber.deal.avaliablility_handler import CheckAvailability
+from dealgrabber.deal.price_handler import HandlePrice
 
 email= "saaaadd53@gmail.com"
 pwd = "ulfxecirdrwngcqt"
