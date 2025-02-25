@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Information - DealGrabber</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h2>Product Information</h2>
+            </div>
+            
+            <div class="card-body">
+                <h4>Product Details</h4>
+                <p>📌 <b>Please click on the link below </b> to verify if it matches the product you are looking for.</p> <p>🔍 If the link does not lead to the correct product, <br><b>submit the form</b> as it is. You will have the option to <b>>update the product link</b> in the next step.</p>
+                <div class="card-footer">
+            
+                <p><strong>Link:</strong> <a href="{{ product.link }}" target="_blank" class="text-break">{{ product.link }}</a></p>
+                
+                {% if product.price %}
+                <p><strong>Current Price:</strong> {{ product.price }}</p>
+                {% endif %}
+                
+                {% if product.shoesize and product.shoesize != '0' %}
+                <p><strong>Selected Size:</strong> {{ product.shoesize }}</p>
+                {% endif %}
+                
+                <div class="mt-4">
+                    <h4>What would you like to do?</h4>
+                    <div class="d-flex gap-2 flex-wrap">
+                        <a href="{{ url_for('add_availability') }}" class="btn btn-primary">Get Availability Notification</a>
+                        <a href="{{ url_for('add_price') }}" class="btn btn-success">Get Price Drop Notification</a>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="/" class="btn btn-secondary">Return to Home</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

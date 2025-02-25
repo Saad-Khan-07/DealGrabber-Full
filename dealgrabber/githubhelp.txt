@@ -1,0 +1,104 @@
+git status        # Check for changes
+git add .         # Stage all changes
+git commit -m "Your commit message"  # Commit changes
+git push origin main  # Push changes to GitHub
+
+
+### **✅ Steps to Create a Git Repository for Your `dealgrabber` Folder**  
+Since you've moved your files to a new location, follow these steps to create a new Git repository **without issues**.  
+
+---
+
+### **📌 Step 1: Navigate to Your Project Folder**  
+Open **Terminal / Git Bash / Command Prompt** and go to your `dealgrabber` folder:  
+```bash
+cd path/to/dealgrabber
+```
+*(Replace `path/to/dealgrabber` with the actual path on your system.)*
+
+---
+
+### **📌 Step 2: Initialize Git in `dealgrabber/`**  
+Run the following command:  
+```bash
+git init
+```
+✅ **This makes `dealgrabber/` a Git repository.**
+
+---
+
+### **📌 Step 3: Verify the Folder Structure**  
+Run:  
+```bash
+ls
+```
+You should see:  
+```
+deal/  
+run.py  
+somefile.txt  # (your text file)
+```
+✅ **Everything looks good.**
+
+---
+
+### **📌 Step 4: Add Everything to Git Tracking**  
+Run:  
+```bash
+git add .
+```
+✅ **This adds all files & folders (including `deal/`) to the repo.**  
+
+---
+
+### **📌 Step 5: Commit the Files**  
+Now commit everything:  
+```bash
+git commit -m "Initial commit with project structure"
+```
+✅ **Git is now tracking your files.**  
+
+---
+
+### **📌 Step 6: Create a New Repository on GitHub**
+1. **Go to** [GitHub](https://github.com/) and log in.  
+2. Click **"New Repository"**.  
+3. **Enter Repository Name** (e.g., `DealGrabber`).  
+4. **DO NOT check "Initialize with README"** (to avoid conflicts).  
+5. Click **"Create Repository"**.  
+6. Copy the **repository URL**, which looks like this:  
+   ```
+   https://github.com/your-username/DealGrabber.git
+   ```
+
+---
+
+### **📌 Step 7: Link Your Local Folder to GitHub**
+Now, connect your local repo to GitHub:  
+```bash
+git remote add origin https://github.com/your-username/DealGrabber.git
+```
+*(Replace `your-username` with your actual GitHub username.)*  
+
+---
+
+### **📌 Step 8: Push Everything to GitHub**
+Run:  
+```bash
+git branch -M main
+git push -u origin main
+```
+✅ **Your repository is now on GitHub!** 🎉  
+
+---
+
+### **📌 Step 9: Verify on GitHub**
+1. **Go to your GitHub repo** → Refresh the page.  
+2. You should see:  
+   - **deal/** (clickable folder)  
+   - **run.py**  
+   - **your text file**  
+
+✅ **Now your project is correctly structured & linked to GitHub!** 🚀  
+
+Let me know if you need any help! 😊
