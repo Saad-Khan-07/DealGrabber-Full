@@ -1,6 +1,6 @@
 from db import DatabaseHandler
-from deal.avaliablility_handler import CheckAvailability
-from deal.mail_notification import SendAvailabilityMail
+from dealgrabber.deal.avaliablility_handler import CheckAvailability
+from dealgrabber.deal.mail_notification import SendAvailabilityMail
 
 dbhandler = DatabaseHandler()
 
