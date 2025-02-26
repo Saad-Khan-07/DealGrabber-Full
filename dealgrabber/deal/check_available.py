@@ -2,19 +2,25 @@ from db import DatabaseHandler
 from deal.avaliablility_handler import CheckAvailability
 from deal.mail_notification import SendAvailabilityMail
 
-dbhandler= DatabaseHandler()
+dbhandler = DatabaseHandler()
 
-def check_price_deal():
-    product_price_list= dbhandler.get_all_price_requests()
-    for product in product_price_list:
-        ca = CheckAvailability(product[2],product[4])
-        db = ca.check_availability()
-        print(db)
-        if(db["availability"]):
-            dm = SendAvailabilityMail(product[1], product[3], db["price"], product[2])
-            dm.send_availability_mail()
-        else:
-            print("didtn work")
-            continue
+def check_availability_deal():
+    product_availability_list = dbhandler.get_all_availability_requests()
+    
+    for product in product_availability_list:
+        try:
+            ca = CheckAvailability(product[2], product[4])  # URL and shoesize
+            db = ca.check_availability()
+            print(db)
 
-check_price_deal()
+            if db.get("availability", False):
+                dm = SendAvailabilityMail(product[1], product[3], db["price"], product[2])
+                dm.send_availability_mail()
+                print(f"✅ Notification sent for {product[3]}")
+            else:
+                print("❌ Product not available, skipping...")
+        
+        except Exception as e:
+            print(f"Error checking availability: {e}")
+
+check_availability_deal()
