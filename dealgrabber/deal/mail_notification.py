@@ -1,92 +1,108 @@
-import os
-import logging
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from dealgrabber.deal.avaliablility_handler import CheckAvailability
+from dealgrabber.deal.price_handler import HandlePrice
 
-# ✅ Configure logging for cloud logging
-logging.basicConfig(filename='logs.log', encoding='utf-8', level=logging.DEBUG, 
-format='%(asctime)s - %(levelname)s - %(message)s')
+email= "saaaadd53@gmail.com"
+pwd = "ulfxecirdrwngcqt"
 
-# ✅ Use Environment Variables Instead of Hardcoded Credentials
-EMAIL_USER = os.getenv("EMAIL_USER")  # Set this in Railway's Environment Variables
-EMAIL_PASS = os.getenv("EMAIL_PASS")  # Set this in Railway's Environment Variables
-
-class EmailSender:
-    def __init__(self, receiver, subject, body):
-        self.receiver = receiver
-        self.subject = subject
-        self.body = body
-
-    def send_mail(self):
-        """Send an email using Gmail SMTP."""
-        msg = MIMEMultipart()
-        msg["From"] = f"DealGrabber <{EMAIL_USER}>"
-        msg["To"] = self.receiver
-        msg["Subject"] = self.subject
-        msg.attach(MIMEText(self.body, "plain"))
-
+class SendAvailabilityMail:
+    def __init__(self, receiver, name, price, link):
+        self.receiver= receiver
+        self.name= name
+        self.price= price
+        self.link= link
+        self.server= smtplib.SMTP("smtp.gmail.com", 587)
+    
+    def send_availability_mail(self):
+        subject= "Your deal is now Available!!!"
+        body = f"""
+            Hello user,
+            Check out the {self.name} before it goes Out of Stock again!!
+            Its available on Flipkart now!!
+            Price: {self.price}
+            Link: {self.link}
+        """
+        msg= MIMEMultipart()
+        msg["From"] = f"DealGrabber <{email}>"
+        msg["To"]= f"{self.receiver}"
+        msg["Subject"] = subject
+        msg.attach(MIMEText(body, "plain"))
         try:
             server = smtplib.SMTP("smtp.gmail.com", 587)
             server.starttls()
-            server.login(EMAIL_USER, EMAIL_PASS)
-            server.sendmail(EMAIL_USER, self.receiver, msg.as_string())
+            server.login(email, pwd)
+            server.sendmail(email, self.receiver, msg.as_string())
             server.quit()
-            logging.info(f"✅ Email sent successfully to {self.receiver}")
+            print("Email sent successfully!")
         except Exception as e:
-            logging.error(f"🚨 Email sending failed: {e}")
+            print(f"Error: {e}")
 
-# ✅ Availability Email Notification
-class SendAvailabilityMail(EmailSender):
+class DealNotiyMail:
     def __init__(self, receiver, name, price, link):
-        subject = "Your deal is now Available!!!"
+        self.receiver= receiver
+        self.name= name
+        self.price= price
+        self.link= link
+        self.server= smtplib.SMTP("smtp.gmail.com", 587)
+        
+    def send_deal_mail(self):
+        subject= "Your deal is now Available at a Cheaper Price!!!"
         body = f"""
-        Hello,
-        
-        Check out the {name} before it goes out of stock again!
-        Available now on Flipkart.
-        Price: {price}
-        
-        👉 [Click Here]({link})
+            Hello user,
+            Check out the {self.name} before it goes Out of Stock again!!
+            Its available on Flipkart now at your requested price!!
+            Price: {self.price}
+            Link: {self.link}
         """
-        super().__init__(receiver, subject, body)
+        msg= MIMEMultipart()
+        msg["From"] = f"DealGrabber <{email}>"
+        msg["To"]= f"{self.receiver}"
+        msg["Subject"] = subject
+        msg.attach(MIMEText(body, "plain"))
+        try:
+            server = smtplib.SMTP("smtp.gmail.com", 587)
+            server.starttls()
+            server.login(email, pwd)
+            server.sendmail(email, self.receiver, msg.as_string())
+            server.quit()
+            print("Email sent successfully!")
+        except Exception as e:
+            print(f"Error: {e}")
 
-# ✅ Price Drop Email Notification
-class DealNotifyMail(EmailSender):
-    def __init__(self, receiver, name, price, link):
-        subject = "Price Drop Alert! Your Deal is Available at a Lower Price!"
-        body = f"""
-        Hello,
-        
-        Check out the {name} before it goes out of stock again!
-        Now available at your requested price on Flipkart.
-        Price: {price}
-        
-        👉 [Click Here]({link})
-        """
-        super().__init__(receiver, subject, body)
-
-# ✅ Confirmation Email
-class ConfirmationMail(EmailSender):
+class ConfirmationMail:
     def __init__(self, receiver):
-        subject = "DealGrabber: Confirmation Mail"
+        self.server= smtplib.SMTP("smtp.gmail.com", 587)
+        self.receiver= receiver
+    
+    def send_confirmation(self):
+        subject = "DealGrabber, Confirmation Mail"
         body = """
-        Hello,
+            Hello there, this mail is to inform you that your request to get notifications on deals is sumitted.
+            Thank you for considering DealGrabber
+"""
+        msg= MIMEMultipart()
+        msg["From"] = f"DealGrabber <{email}>"
+        msg["To"]= f"{self.receiver}"
+        msg["Subject"] = subject
+        msg.attach(MIMEText(body, "plain"))
+        try:
+            server = smtplib.SMTP("smtp.gmail.com", 587)
+            server.starttls()
+            server.login(email, pwd)
+            server.sendmail(email, self.receiver, msg.as_string())
+            server.quit()
+            print("Email sent successfully!")
+        except Exception as e:
+            print(f"Error: {e}")
 
-        Your request to receive notifications about deals has been successfully submitted.
-        Thank you for using DealGrabber!
-        """
-        super().__init__(receiver, subject, body)
 
-# ✅ Example Usage:
-if __name__ == "__main__":
-    email = "test@example.com"
-    
-    # Send confirmation mail
-    ConfirmationMail(email).send_mail()
-    
-    # Send availability alert
-    SendAvailabilityMail(email, "Nike Sneakers", "₹5,499", "https://example.com/product").send_mail()
-    
-    # Send price drop alert
-    DealNotifyMail(email, "Nike Sneakers", "₹4,999", "https://example.com/product").send_mail()
+
+# shoes = {"shoesize": 9,"shoes": True}
+# link="https://www.flipkart.com/puma-rungryp-sneakers-men/p/itm7b4744135bc9c?pid=SHOGQAZD7MVX94YU&lid=LSTSHOGQAZD7MVX94YURTWUXM&marketplace=FLIPKART&q=puma+shoes&store=osp&srno=s_1_3&otracker=search&otracker1=search&fm=Search&iid=f2d678a8-fab2-47a9-adfc-860f6007712b.SHOGQAZD7MVX94YU.SEARCH&ppt=sp&ppn=sp&ssid=fx5xfr2k2o0000001740292012231&qH=12daa41359850f83"
+# name= "FULL FORCE LO Sneakers For Men"
+# price= "₹8,495"
+
+# cm = ConfirmationMail("stupefyingbuttons@gmail.com")
+# cm.send_confirmation()
