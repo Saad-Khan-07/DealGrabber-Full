@@ -1,6 +1,6 @@
 from db import DatabaseHandler
-from deal.price_handler import HandlePrice
-from deal.mail_notification import DealNotiyMail
+from dealgrabber.deal.price_handler import HandlePrice
+from dealgrabber.deal.mail_notification import DealNotiyMail
 
 dbhandler = DatabaseHandler()
 
