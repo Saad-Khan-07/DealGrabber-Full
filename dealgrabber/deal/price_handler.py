@@ -1,13 +1,20 @@
 from selenium.webdriver.common.by import By
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 import time
 
 class HandlePrice:
     def __init__(self, threshold_price, link, shoesize=0):
-        self.driver= webdriver.Chrome()
-        self.threshold_price= threshold_price
-        self.link= link
-        self.shoesize= shoesize
+        chrome_options = Options()
+        chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--disable-dev-shm-usage")
+        
+        self.driver = webdriver.Chrome(service=Service(), options=chrome_options)
+        self.threshold_price = threshold_price
+        self.link = link
+        self.shoesize = shoesize
     
     def check_price(self):
         self.driver.get(self.link)
@@ -24,7 +31,7 @@ class HandlePrice:
                     except:
                         continue
             except Exception as e:
-                print(f"no {self.shoesize} available for this shoe")
+                print(f"No {self.shoesize} available for this shoe")
                 print(e)
 
         try:
@@ -42,4 +49,4 @@ class HandlePrice:
             return {"name": "Unknown", "link": self.link, "price": self.threshold_price, "current_price": "N/A"}  # ✅ Safe return
         
     def closedriver(self):
-        self.driver.close()
+        self.driver.quit()

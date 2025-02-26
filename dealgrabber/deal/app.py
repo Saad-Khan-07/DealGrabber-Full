@@ -1,9 +1,20 @@
 import time
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.keys import Keys
 from bs4 import BeautifulSoup
+from webdriver_manager.chrome import ChromeDriverManager
+
+def get_chrome_driver():
+    """Set up Chrome WebDriver with headless options."""
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")  # Run in headless mode
+    chrome_options.add_argument("--no-sandbox")  # Helps in cloud environments
+    chrome_options.add_argument("--disable-dev-shm-usage")  # Prevents crashes in containers
+    return webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 
 class ProductInfo:
     def __init__(self):
@@ -11,7 +22,7 @@ class ProductInfo:
         self.price= None
         self.link=None
         self.shoesize=0
-        self.driver = webdriver.Chrome()    
+        self.driver = get_chrome_driver()    
     
     def search_product(self):
         self.driver.get(f"https://www.flipkart.com/")
@@ -43,20 +54,5 @@ class ProductInfo:
         
         return {"price": self.price, "link": self.link, "shoesize":self.shoesize}
 
-    # def check_shoes(self, results):
-    #     for elem in results:
-    #         data_id = elem.get_attribute("data-id")  # Get 'data-id' for each result
-    #         if data_id and data_id.startswith("SH"):
-    #             choice = input("Are you looking for shoes? (y/n): ").strip().lower()
-    #             if choice == "y":
-    #                 self.shoesize = int(input("Enter the size of the shoes (UK): "))
-    #             break  # Exit loop after the first valid shoe product
-
     def close_driver(self):
         self.driver.quit()
-
-# if __name__=="__main__":
-#     pinfo= ProductInfo()
-#     pinfo.search_product()
-#     dinfo= pinfo.get_product()
-#     print(dinfo)
