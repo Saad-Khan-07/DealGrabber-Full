@@ -1,84 +1,86 @@
 import logging
 from selenium.webdriver.common.by import By
 from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException
 import time
 
-# Configure logging
-logging.basicConfig(filename='example1.log', encoding='utf-8', level=logging.DEBUG,
-                    format='%(asctime)s - %(levelname)s - %(message)s')
+# ✅ Configure logging
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
-class CheckAvailability:
-    def __init__(self, link, shoesize=0):
+class HandlePrice:
+    def __init__(self, threshold_price, link, shoesize=0):
+        """Initialize the webdriver and store product details."""
+        self.driver = webdriver.Chrome()
+        self.threshold_price = threshold_price
         self.link = link
         self.shoesize = shoesize
-        self.name = "name"
-        self.driver = webdriver.Chrome()
-        self.available = False
 
-    def check_availability(self):
-        logging.info(f"Checking availability for link: {self.link} with shoe size: {self.shoesize}")
-        self.driver.get(self.link)
-        time.sleep(1)
-        shoe_size_found = False
+    def check_price(self):
+        """Check product price and return structured data."""
+        try:
+            logging.info(f"🔍 Checking price for: {self.link}")
+            self.driver.get(self.link)
+            time.sleep(2)  # Allow page to load
 
-        if int(self.shoesize) > 0:
+            # ✅ Handle shoe size selection (if applicable)
+            if int(self.shoesize) > 0:
+                try:
+                    sizelist = self.driver.find_elements(By.XPATH, "//li[contains(@id, 'swatch') and contains(@id, '-size')]")
+                    size_found = False
+                    for size in sizelist:
+                        try:
+                            sizebutton = size.find_element(By.XPATH, f".//a[contains(text(), '{self.shoesize}')]")
+                            time.sleep(0.5)
+                            sizebutton.click()  # Click on the correct size
+                            time.sleep(3)  # Allow price to update
+                            size_found = True
+                            break  # Exit loop after clicking the correct size
+                        except:
+                            continue
+                    
+                    if not size_found:
+                        logging.warning(f"❌ No size {self.shoesize} available.")
+
+                except Exception as e:
+                    logging.error(f"⚠️ Error selecting shoe size: {e}")
+
+            # ✅ Extract product name
             try:
-                sizelist = self.driver.find_elements(By.XPATH, "//li[contains(@id, 'swatch') and contains(@id, '-size')]")
-                if not sizelist:
-                    logging.warning("No size options available for this product.")
-                    return
-                for size in sizelist:
-                    try:
-                        sizebutton = size.find_element(By.XPATH, f".//a[contains(text(), '{self.shoesize}')]")
-                        time.sleep(0.5)
-                        sizebutton.click()  # Click on the correct size
-                        time.sleep(5)
-                        shoe_size_found = True  # Mark that the size exists
-                        break  # Exit loop after clicking the correct size
-                    except NoSuchElementException:
-                        continue
-                if not shoe_size_found:
-                    logging.warning(f"Shoe size {self.shoesize} is not available.")
-                    return
-            except NoSuchElementException:
-                logging.error(f"No size {self.shoesize} available for this shoe.")
-                return
+                name = self.driver.find_element(By.CSS_SELECTOR, "h1")
+                nametext = name.text.strip()
+            except Exception:
+                nametext = "Unknown Product"
+                logging.warning("⚠️ Could not find product name.")
 
-        name = self.driver.find_element(By.CSS_SELECTOR, "h1")
-        nametext = name.text.strip()
-        getprice = self.driver.find_element(By.XPATH, "//div[contains(text(), '₹')]")
-        curprice = getprice.text.strip().replace("₹", "").replace(",", "")
+            # ✅ Extract price
+            try:
+                getprice = self.driver.find_element(By.XPATH, "//div[contains(text(), '₹')]")
+                curprice = getprice.text.strip().replace("₹", "").replace(",", "")
+            except Exception:
+                curprice = None
+                logging.warning("⚠️ Could not find the price of the product.")
 
-        # Check if the product is sold out
-        is_sold_out = False
-        is_coming_soon = False
+            return {
+                "name": nametext,
+                "link": self.link,
+                "price": self.threshold_price,
+                "current_price": curprice if curprice else "N/A"
+            }
 
-        try:
-            self.driver.find_element(By.XPATH, "//div[contains(text(), 'Sold Out')]")
-            is_sold_out = True
-        except NoSuchElementException:
-            pass
+        except Exception as e:
+            logging.error(f"🚨 Error loading page: {e}")
+            return {"error": str(e)}
 
-        try:
-            self.driver.find_element(By.XPATH, "//div[contains(text(), 'Coming Soon')]")
-            is_coming_soon = True
-        except NoSuchElementException:
-            pass
+        finally:
+            self.closedriver()  # ✅ Always close the driver
 
-        # Decision Making
-        if is_sold_out:
-            self.available = False
-            logging.info("The product is sold out. Notification will be sent when it's available.")
-        elif is_coming_soon:
-            self.available = False
-            logging.info("The product hasn't been launched yet! Notification will be sent when available.")
-        else:
-            self.available = True
-            logging.info("The product is available!")
-        
-        return {"name": nametext, "link": self.link, "price": curprice, "availability": self.available}
-    
-    def close_driver(self):
-        logging.info("Closing the browser driver.")
-        self.driver.close()
+    def closedriver(self):
+        """Close the WebDriver properly."""
+        if self.driver:
+            self.driver.quit()
+            logging.info("✅ WebDriver closed.")
+
+# ✅ Example Usage
+if __name__ == "__main__":
+    hp = HandlePrice(threshold_price=5000, link="https://example.com/product", shoesize=9)
+    result = hp.check_price()
+    logging.info(f"🔹 Final Result: {result}")
