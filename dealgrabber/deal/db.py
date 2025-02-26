@@ -64,3 +64,25 @@ class DatabaseHandler:
         except psycopg2.Error as e:
             print(f"Database Error (get_all_price_requests): {e}")
             return []
+
+    def delete_request(self, email, product_link):
+        """Deletes an availability or price request from the database."""
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            
+            # Delete from availability_requests
+            cursor.execute("""
+                DELETE FROM availability_requests WHERE email = %s AND product_link = %s
+            """, (email, product_link))
+            
+            # Delete from price_requests
+            cursor.execute("""
+                DELETE FROM price_requests WHERE email = %s AND product_link = %s
+            """, (email, product_link))
+            
+            conn.commit()
+            cursor.close()
+            conn.close()
+        except psycopg2.Error as e:
+            print(f"Database Error (delete_request): {e}")
