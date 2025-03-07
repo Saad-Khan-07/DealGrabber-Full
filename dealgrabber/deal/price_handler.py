@@ -2,6 +2,7 @@ from selenium.webdriver.common.by import By
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
 import time
 
 class HandlePrice:
@@ -11,7 +12,8 @@ class HandlePrice:
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-dev-shm-usage")
         
-        self.driver = webdriver.Chrome(service=Service(), options=chrome_options)
+        service = Service(ChromeDriverManager().install())
+        self.driver = webdriver.Chrome(service=service, options=chrome_options)
         self.threshold_price = threshold_price
         self.link = link
         self.shoesize = shoesize

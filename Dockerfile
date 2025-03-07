@@ -6,12 +6,11 @@ WORKDIR /app
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
-    curl wget unzip chromium chromium-driver \
+    curl wget unzip chromium \
     && rm -rf /var/lib/apt/lists/*
 
-# Set Chrome and ChromeDriver paths
+# Set Chrome path
 ENV CHROME_BIN=/usr/bin/chromium
-ENV CHROMEDRIVER_PATH=/usr/bin/chromedriver
 
 # Create and activate a virtual environment
 RUN python3 -m venv /opt/venv
