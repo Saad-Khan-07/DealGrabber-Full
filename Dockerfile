@@ -7,10 +7,14 @@ WORKDIR /app
 # Install system dependencies (including Chrome & ChromeDriver)
 RUN apt-get update && apt-get install -y \
     curl wget unzip \
-    chromium chromium-driver \
+    chromium \
     && rm -rf /var/lib/apt/lists/*
 
-# Set Chrome binary path for Selenium
+# Install ChromeDriver 134 (which matches Chrome 134)
+RUN wget -O /usr/bin/chromedriver https://storage.googleapis.com/chrome-for-testing-public/134.0.6998.35/linux64/chromedriver-linux64.zip \
+    && chmod +x /usr/bin/chromedriver
+
+# Set Chrome and ChromeDriver paths
 ENV CHROME_BIN=/usr/bin/chromium
 ENV CHROMEDRIVER_PATH=/usr/bin/chromedriver
 
