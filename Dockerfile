@@ -1,27 +1,32 @@
-# Use a minimal Python image
+# Use a lightweight Python image
 FROM python:3.9-slim
 
-# Set working directory
+# Set the working directory
 WORKDIR /app
 
-# Install system dependencies
+# Install system dependencies (including Chrome & ChromeDriver)
 RUN apt-get update && apt-get install -y \
-    curl wget unzip chromium-driver python3-venv \
+    curl wget unzip \
+    chromium chromium-driver \
     && rm -rf /var/lib/apt/lists/*
+
+# Set Chrome binary path for Selenium
+ENV CHROME_BIN=/usr/bin/chromium
+ENV CHROMEDRIVER_PATH=/usr/bin/chromedriver
 
 # Create and activate a virtual environment
 RUN python3 -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
-# Install Python dependencies inside virtual environment
+# Install Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the entire project into the container
+# Copy the project files
 COPY . .
 
-# Expose the Railway-assigned port
+# Expose Railway-assigned port
 EXPOSE $PORT
 
-# Run the FastAPI/Flask app using Uvicorn or Gunicorn
+# Run the Flask app with Gunicorn
 CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:$PORT", "dealgrabberflask.app:app"]
