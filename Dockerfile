@@ -1,9 +1,27 @@
-ARG PORT= 443
-FROM cypress/browsers:latest
-RUN apt-get install python3 -y
-RUN echo $(python3 -m site --user-base)
+# Use a minimal Python image
+FROM python:3.9-slim
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    curl wget unzip chromium-driver python3-venv \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create and activate a virtual environment
+RUN python3 -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Install Python dependencies inside virtual environment
 COPY requirements.txt .
-ENV PATH /home/root/.local/bin:${PATH}
-RUN apt-get update && apt-get install -y python3-pip && pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the entire project into the container
 COPY . .
-CMD uvicorn main:app --host 0.0.0.0 --port $PORT
+
+# Expose the Railway-assigned port
+EXPOSE $PORT
+
+# Run the FastAPI/Flask app using Uvicorn or Gunicorn
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:$PORT", "dealgrabberflask.app:app"]
