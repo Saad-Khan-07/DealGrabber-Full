@@ -22,7 +22,7 @@ class ProductInfo:
         self.price= None
         self.link=None
         self.shoesize=0
-        self.driver = get_chrome_driver()    
+        self.driver = get_chrome_driver()  
     
     def search_product(self):
         self.driver.get(f"https://www.flipkart.com/")
