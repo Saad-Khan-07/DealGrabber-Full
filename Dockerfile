@@ -1,7 +1,7 @@
-# Use a lightweight Python image
+# Use latest Python with better compatibility
 FROM python:3.10-slim
 
-# Set the working directory
+# Set working directory
 WORKDIR /app
 
 # Install system dependencies
@@ -9,15 +9,7 @@ RUN apt-get update && apt-get install -y \
     curl wget unzip chromium chromium-driver \
     && rm -rf /var/lib/apt/lists/*
 
-# Ensure latest ChromeDriver version matches installed Chromium
-RUN CHROMIUM_VERSION=$(chromium --version | awk '{print $2}') && \
-    LATEST_CHROMEDRIVER_URL="https://storage.googleapis.com/chrome-for-testing-public/$CHROMIUM_VERSION/linux64/chromedriver-linux64.zip" && \
-    wget -O chromedriver.zip "$LATEST_CHROMEDRIVER_URL" && \
-    unzip chromedriver.zip -d /usr/bin/ && \
-    chmod +x /usr/bin/chromedriver && \
-    rm chromedriver.zip
-
-# Set environment variables for Selenium
+# Set Chrome and ChromeDriver paths
 ENV CHROME_BIN=/usr/bin/chromium
 ENV CHROMEDRIVER_PATH=/usr/bin/chromedriver
 
@@ -35,5 +27,5 @@ COPY . .
 # Expose Railway-assigned port
 EXPOSE $PORT
 
-# Run the Flask app with Gunicorn
+# Start Gunicorn server
 CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:$PORT", "dealgrabberflask.app:app"]
