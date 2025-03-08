@@ -1,31 +1,20 @@
-FROM python:3.10
+FROM selenium/standalone-chrome:latest
 
-# Install Chrome and necessary utilities
-RUN apt-get update && apt-get install -y \
-    wget \
-    gnupg2 \
-    unzip \
-    curl \
-    ca-certificates
+# Install Python 3.10
+RUN sudo apt-get update && \
+    sudo apt-get install -y software-properties-common && \
+    sudo add-apt-repository ppa:deadsnakes/ppa && \
+    sudo apt-get update && \
+    sudo apt-get install -y python3.10 python3.10-venv python3.10-dev python3-pip
 
-# Install Chrome
-RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
-    && echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list \
-    && apt-get update \
-    && apt-get install -y google-chrome-stable
+# Make Python 3.10 the default python
+RUN sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.10 1 && \
+    sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1
 
-# Install specific ChromeDriver version
-RUN wget -q "https://chromedriver.storage.googleapis.com/122.0.6261.94/chromedriver_linux64.zip" -O /tmp/chromedriver.zip \
-    && unzip /tmp/chromedriver.zip -d /usr/local/bin/ \
-    && chmod +x /usr/local/bin/chromedriver \
-    && rm /tmp/chromedriver.zip
-
-# Verify installation
-RUN google-chrome --version && chromedriver --version
+# Update pip
+RUN python -m pip install --upgrade pip
 
 # Set environment variables
-ENV CHROME_BIN=/usr/bin/google-chrome
-ENV PATH="/usr/local/bin:${PATH}"
 ENV PYTHONUNBUFFERED=1
 
 # Copy application
