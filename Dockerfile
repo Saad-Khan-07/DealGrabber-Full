@@ -1,6 +1,6 @@
 FROM python:3.10-slim
 
-# Install dependencies for Chrome and ChromeDriver
+# Install dependencies for Chrome
 RUN apt-get update && apt-get install -y \
     wget \
     gnupg \
@@ -15,34 +15,30 @@ RUN apt-get update && apt-get install -y \
     libxkbcommon0 \
     libatspi2.0-0 \
     libdrm2 \
-    libwayland-client0 \
-    && rm -rf /var/lib/apt/lists/*
+    libwayland-client0
 
-# Install Chrome
-RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
-    echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google.list && \
-    apt-get update && \
-    apt-get install -y google-chrome-stable && \
-    rm -rf /var/lib/apt/lists/*
+# Fix distutils issue
+RUN rm -rf /usr/lib/python3/dist-packages/distutils-precedence.pth
 
-# Install ChromeDriver
-RUN CHROME_VERSION=$(google-chrome --version | awk '{print $3}') && \
-    CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION") && \
-    wget -O /tmp/chromedriver.zip "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip" && \
-    unzip /tmp/chromedriver.zip -d /usr/local/bin/ && \
-    chmod +x /usr/local/bin/chromedriver && \
-    rm /tmp/chromedriver.zip
+# Install Chrome and ChromeDriver properly
+RUN wget -O /tmp/chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
+    apt-get update && apt-get install -y /tmp/chrome.deb && \
+    rm /tmp/chrome.deb && \
+    apt-get install -y chromium-driver
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
 ENV CHROME_BIN=/usr/bin/google-chrome
-ENV CHROMEDRIVER_PATH=/usr/local/bin/chromedriver
+ENV CHROMEDRIVER_PATH=/usr/bin/chromedriver
 
 # Set working directory
 WORKDIR /app
 
 # Copy application files
 COPY . .
+
+# Upgrade pip without permission issues
+RUN python -m pip install --upgrade pip --break-system-packages
 
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
@@ -51,4 +47,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 EXPOSE $PORT
 
 # Run the application
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:$PORT", "dealgrabberflask.app:app"]
+CMD ["python", "run.py"]
