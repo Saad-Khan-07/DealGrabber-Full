@@ -15,21 +15,26 @@ RUN apt-get update && apt-get install -y \
     libxkbcommon0 \
     libatspi2.0-0 \
     libdrm2 \
-    libwayland-client0 \
-    fonts-liberation \
-    libappindicator3-1 \
-    xdg-utils
+    libwayland-client0
 
-# ✅ Install Google Chrome (Stable)
-RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
-    echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google.list && \
-    apt-get update && apt-get install -y google-chrome-stable
+# Fix distutils issue
+RUN rm -rf /usr/lib/python3/dist-packages/distutils-precedence.pth
 
-# ✅ WebDriver Manager will install ChromeDriver at runtime, so no need to download it manually
+# Install Chrome version 114
+RUN wget -O /tmp/google-chrome.deb https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_114.0.5735.90-1_amd64.deb && \
+    apt-get update && apt-get install -y /tmp/google-chrome.deb && \
+    rm /tmp/google-chrome.deb
+
+# Install ChromeDriver 114
+RUN wget -O /tmp/chromedriver.zip https://storage.googleapis.com/chrome-for-testing-public/114.0.5735.90/linux64/chromedriver-linux64.zip && \
+    unzip /tmp/chromedriver.zip -d /usr/bin/ && \
+    chmod +x /usr/bin/chromedriver && \
+    rm /tmp/chromedriver.zip
 
 # Set environment variables
-ENV CHROME_BIN=/usr/bin/google-chrome
 ENV PYTHONUNBUFFERED=1
+ENV CHROME_BIN=/usr/bin/google-chrome
+ENV CHROMEDRIVER_PATH=/usr/bin/chromedriver
 
 # Set working directory
 WORKDIR /app
@@ -37,10 +42,10 @@ WORKDIR /app
 # Copy application files
 COPY . .
 
-# Upgrade pip safely
-RUN pip install --upgrade pip 
+# Upgrade pip without permission issues
+RUN python -m pip install --upgrade pip --break-system-packages
 
-# ✅ Install dependencies (including WebDriver Manager)
+# Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Expose Railway-assigned port
