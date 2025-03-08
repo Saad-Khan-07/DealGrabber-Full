@@ -15,21 +15,28 @@ RUN apt-get update && apt-get install -y \
     libxkbcommon0 \
     libatspi2.0-0 \
     libdrm2 \
-    libwayland-client0
+    libwayland-client0 \
+    fonts-liberation \
+    libappindicator3-1 \
+    xdg-utils
 
-# Fix distutils issue
-RUN rm -rf /usr/lib/python3/dist-packages/distutils-precedence.pth
+# ✅ Install Google Chrome (Stable)
+RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
+    echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google.list && \
+    apt-get update && apt-get install -y google-chrome-stable
 
-# Install Chrome and ChromeDriver properly
-RUN wget -O /tmp/chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
-    apt-get update && apt-get install -y /tmp/chrome.deb && \
-    rm /tmp/chrome.deb && \
-    apt-get install -y chromium-driver
+# ✅ Install ChromeDriver (Matching Chrome Version)
+RUN CHROME_VERSION=$(google-chrome --version | awk '{print $3}') && \
+    CHROMEDRIVER_URL="https://storage.googleapis.com/chrome-for-testing-public/${CHROME_VERSION}/linux64/chromedriver-linux64.zip" && \
+    wget -q -O /tmp/chromedriver.zip "$CHROMEDRIVER_URL" && \
+    unzip /tmp/chromedriver.zip -d /usr/bin/ && \
+    chmod +x /usr/bin/chromedriver && \
+    rm /tmp/chromedriver.zip
 
-# Set environment variables
-ENV PYTHONUNBUFFERED=1
+# ✅ Set environment variables
 ENV CHROME_BIN=/usr/bin/google-chrome
 ENV CHROMEDRIVER_PATH=/usr/bin/chromedriver
+ENV PYTHONUNBUFFERED=1
 
 # Set working directory
 WORKDIR /app
@@ -37,14 +44,14 @@ WORKDIR /app
 # Copy application files
 COPY . .
 
-# Upgrade pip without permission issues
-RUN python -m pip install --upgrade pip --break-system-packages
+# ✅ Upgrade pip safely
+RUN pip install --upgrade pip 
 
-# Install dependencies
+# ✅ Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Expose Railway-assigned port
 EXPOSE $PORT
 
 # Run the application
-CMD ["python", "run.py"]
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:$PORT", "dealgrabberflask.app:app"]
