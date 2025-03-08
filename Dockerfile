@@ -17,28 +17,34 @@ RUN apt-get update && apt-get install -y \
     libdrm2 \
     libwayland-client0
 
-# Install Chrome
-RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
-    echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list && \
-    apt-get update && \
-    apt-get install -y google-chrome-stable
+# Fix distutils issue
+RUN rm -rf /usr/lib/python3/dist-packages/distutils-precedence.pth
 
-# Install ChromeDriver using npm and puppeteer
-RUN apt-get install -y nodejs npm && \
-    npm install puppeteer && \
-    cp node_modules/puppeteer/.local-chromium/*/chrome-linux*/chromedriver /usr/local/bin/ && \
-    chmod +x /usr/local/bin/chromedriver
+# Install Chrome and ChromeDriver properly
+RUN wget -O /tmp/chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
+    apt-get update && apt-get install -y /tmp/chrome.deb && \
+    rm /tmp/chrome.deb && \
+    apt-get install -y chromium-driver
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
 ENV CHROME_BIN=/usr/bin/google-chrome
+ENV CHROMEDRIVER_PATH=/usr/bin/chromedriver
 
-# Copy application
+# Set working directory
 WORKDIR /app
+
+# Copy application files
 COPY . .
 
+# Upgrade pip without permission issues
+RUN python -m pip install --upgrade pip --break-system-packages
+
 # Install dependencies
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Expose Railway-assigned port
+EXPOSE $PORT
 
 # Run the application
 CMD ["python", "run.py"]
