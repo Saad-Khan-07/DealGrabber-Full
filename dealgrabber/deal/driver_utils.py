@@ -20,16 +20,16 @@ def get_chrome_driver():
         chrome_options.add_argument("--disable-dev-shm-usage")
         chrome_options.add_argument("--disable-gpu")
         chrome_options.add_argument("--window-size=1920,1080")
+
+        chromedriver_path = "/usr/bin/chromedriver"
         
         # For Railway.app and similar platforms
         # Check for any environment indicator that we're on Railway
         if os.environ.get("RAILWAY_STATIC_URL") or os.environ.get("RAILWAY_SERVICE_ID"):
             logger.info("Running in Railway environment")
             try:
-                # Try to use the system ChromeDriver first
-                driver_path = "/usr/bin/chromedriver"
-                if os.path.exists(driver_path):
-                    service = Service(driver_path)
+                if os.path.exists(chromedriver_path):
+                    service = Service(chromedriver_path)
                     driver = webdriver.Chrome(service=service, options=chrome_options)
                     return driver
                 else:
