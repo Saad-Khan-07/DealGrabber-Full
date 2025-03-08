@@ -10,7 +10,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def get_chrome_driver():
-    """Set up Chrome WebDriver with headless options."""
+    """Set up Chrome WebDriver with headless options for production environments."""
     try:
         logger.info("Initializing Chrome WebDriver...")
         
@@ -21,32 +21,27 @@ def get_chrome_driver():
         chrome_options.add_argument("--disable-gpu")
         chrome_options.add_argument("--window-size=1920,1080")
         
-        # Set binary location if environment variable exists
-        chrome_binary = os.environ.get("CHROME_BIN", "/usr/bin/chromium")
-        chrome_options.binary_location = chrome_binary
+        # For Railway.app and similar platforms
+        # Check for any environment indicator that we're on Railway
+        if os.environ.get("RAILWAY_STATIC_URL") or os.environ.get("RAILWAY_SERVICE_ID"):
+            logger.info("Running in Railway environment")
+            try:
+                # Try to use the system ChromeDriver first
+                driver_path = "/usr/bin/chromedriver"
+                if os.path.exists(driver_path):
+                    service = Service(driver_path)
+                    driver = webdriver.Chrome(service=service, options=chrome_options)
+                    return driver
+                else:
+                    # Fall back to letting Chrome find the appropriate driver
+                    driver = webdriver.Chrome(options=chrome_options)
+                    return driver
+            except Exception as e:
+                logger.error(f"Failed with explicit path: {str(e)}")
+                # Fall through to default method
         
-        # Log for debugging
-        logger.info(f"Chrome binary location: {chrome_binary}")
-        
-        # Use Chrome version as an argument if needed
-        chrome_version = None
-        try:
-            # Try to get Chrome version, fallback gracefully if it fails
-            result = os.popen(f"{chrome_binary} --version").read()
-            if result:
-                version_parts = result.split()
-                if len(version_parts) >= 2:
-                    chrome_version = version_parts[1].split('.')[0]  # Just the major version
-                    logger.info(f"Detected Chrome version: {chrome_version}")
-        except Exception as e:
-            logger.warning(f"Could not detect Chrome version: {e}")
-        
-        # Initialize WebDriver with version if available
-        if chrome_version:
-            service = Service(ChromeDriverManager(chrome_version=chrome_version).install())
-        else:
-            service = Service(ChromeDriverManager().install())
-            
+        # Standard ChromeDriverManager approach for development
+        service = Service(ChromeDriverManager().install())
         driver = webdriver.Chrome(service=service, options=chrome_options)
         
         logger.info("Chrome WebDriver initialized successfully")
