@@ -20,8 +20,8 @@ RUN apt-get update && apt-get install -y \
 # Fix distutils issue
 RUN rm -rf /usr/lib/python3/dist-packages/distutils-precedence.pth
 
-# Install Chrome version 114
-RUN wget -O /tmp/google-chrome.deb https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_114.0.5735.90-1_amd64.deb && \
+# Install Chrome 114 from an archived source
+RUN wget -O /tmp/google-chrome.deb https://cdn.aykutsevinc.com/google-chrome/google-chrome-stable_114.0.5735.90-1_amd64.deb && \
     apt-get update && apt-get install -y /tmp/google-chrome.deb && \
     rm /tmp/google-chrome.deb
 
