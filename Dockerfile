@@ -1,21 +1,37 @@
-FROM selenium/standalone-chrome:latest
+FROM python:3.10-slim
 
-# Install Python 3.10
-RUN sudo apt-get update && \
-    sudo apt-get install -y software-properties-common && \
-    sudo add-apt-repository ppa:deadsnakes/ppa && \
-    sudo apt-get update && \
-    sudo apt-get install -y python3.10 python3.10-venv python3.10-dev python3-pip
+# Install dependencies for Chrome
+RUN apt-get update && apt-get install -y \
+    wget \
+    gnupg \
+    curl \
+    unzip \
+    xvfb \
+    libxi6 \
+    libgconf-2-4 \
+    libnss3 \
+    libgbm1 \
+    libxcb1 \
+    libxkbcommon0 \
+    libatspi2.0-0 \
+    libdrm2 \
+    libwayland-client0
 
-# Make Python 3.10 the default python
-RUN sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.10 1 && \
-    sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1
+# Install Chrome
+RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
+    echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list && \
+    apt-get update && \
+    apt-get install -y google-chrome-stable
 
-# Update pip
-RUN python -m pip install --upgrade pip
+# Install ChromeDriver using npm and puppeteer
+RUN apt-get install -y nodejs npm && \
+    npm install puppeteer && \
+    cp node_modules/puppeteer/.local-chromium/*/chrome-linux*/chromedriver /usr/local/bin/ && \
+    chmod +x /usr/local/bin/chromedriver
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
+ENV CHROME_BIN=/usr/bin/google-chrome
 
 # Copy application
 WORKDIR /app
