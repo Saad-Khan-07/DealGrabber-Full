@@ -1,20 +1,8 @@
 import time
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.keys import Keys
 from bs4 import BeautifulSoup
-from webdriver_manager.chrome import ChromeDriverManager
-
-def get_chrome_driver():
-    """Set up Chrome WebDriver with headless options."""
-    chrome_options = Options()
-    chrome_options.add_argument("--headless")  # Run in headless mode
-    chrome_options.add_argument("--no-sandbox")  # Helps in cloud environments
-    chrome_options.add_argument("--disable-dev-shm-usage")  # Prevents crashes in containers
-    return webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+from dealgrabber.deal.driver_utils import get_chrome_driver
 
 class ProductInfo:
     def __init__(self):

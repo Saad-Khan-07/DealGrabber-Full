@@ -1,19 +1,10 @@
 from selenium.webdriver.common.by import By
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
-from webdriver_manager.chrome import ChromeDriverManager
 import time
+from dealgrabber.deal.driver_utils import get_chrome_driver
 
 class HandlePrice:
     def __init__(self, threshold_price, link, shoesize=0):
-        chrome_options = Options()
-        chrome_options.add_argument("--headless")
-        chrome_options.add_argument("--no-sandbox")
-        chrome_options.add_argument("--disable-dev-shm-usage")
-        
-        service = Service(ChromeDriverManager().install())
-        self.driver = webdriver.Chrome(service=service, options=chrome_options)
+        self.driver = get_chrome_driver()
         self.threshold_price = threshold_price
         self.link = link
         self.shoesize = shoesize
@@ -48,7 +39,7 @@ class HandlePrice:
         except Exception as e:
             print("Couldn't find the price of the element")
             print(e)
-            return {"name": "Unknown", "link": self.link, "price": self.threshold_price, "current_price": "N/A"}  # ✅ Safe return
+            return {"name": "Unknown", "link": self.link, "price": self.threshold_price, "current_price": "N/A"}
         
     def closedriver(self):
         self.driver.quit()

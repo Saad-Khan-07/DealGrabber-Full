@@ -23,6 +23,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the project files
 COPY . .
 
+# Pre-download ChromeDriver matching the Chrome version
+RUN python -c "from webdriver_manager.chrome import ChromeDriverManager; import os; chrome_binary = os.environ.get('CHROME_BIN', '/usr/bin/chromium'); version = os.popen(f'{chrome_binary} --version').read().split()[1].split('.')[0] if os.path.exists(chrome_binary) else None; ChromeDriverManager(chrome_version=version).install() if version else ChromeDriverManager().install()"
+
 # Expose Railway-assigned port
 EXPOSE $PORT
 

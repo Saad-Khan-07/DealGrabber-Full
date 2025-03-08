@@ -6,9 +6,6 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from dealgrabber.deal.db import DatabaseHandler
 from flask import Flask, jsonify, render_template, request, redirect, url_for, session
 import psycopg2
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.by import By
-from dealgrabber.deal.app import ProductInfo
 from dealgrabber.run import search_product_run, check_availability, check_price  # ✅ Make sure this function exists in `run.py`
 
 app = Flask(__name__)

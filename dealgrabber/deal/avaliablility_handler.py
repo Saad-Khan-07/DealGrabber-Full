@@ -1,22 +1,14 @@
 from selenium.webdriver.common.by import By
-from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.chrome.service import Service
 import time
+from dealgrabber.deal.driver_utils import get_chrome_driver
 
 class CheckAvailability:
     def __init__(self, link, shoesize=0):
         self.link = link
         self.shoesize = shoesize
         self.name = "name"
-        options = webdriver.ChromeOptions()
-        options.add_argument("--headless")
-        options.add_argument("--no-sandbox")
-        options.add_argument("--disable-dev-shm-usage")
-        options.binary_location = "/usr/bin/chromium"
-        service = Service(ChromeDriverManager().install())
-        self.driver = webdriver.Chrome(service=service, options=options)
+        self.driver = get_chrome_driver()
         self.available = False
 
     def check_availability(self):
