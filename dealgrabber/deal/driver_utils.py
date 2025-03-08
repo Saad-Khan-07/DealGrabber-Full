@@ -13,7 +13,7 @@ def get_chrome_driver():
     """Set up Chrome WebDriver with headless options for production environments."""
     try:
         logger.info("Initializing Chrome WebDriver...")
-        
+
         chrome_options = Options()
         chrome_options.add_argument("--headless")
         chrome_options.add_argument("--no-sandbox")
@@ -21,32 +21,28 @@ def get_chrome_driver():
         chrome_options.add_argument("--disable-gpu")
         chrome_options.add_argument("--window-size=1920,1080")
 
+        # Explicitly set ChromeDriver path
         chromedriver_path = "/usr/bin/chromedriver"
-        
-        # For Railway.app and similar platforms
-        # Check for any environment indicator that we're on Railway
+
+        # Check if running in Railway.app
         if os.environ.get("RAILWAY_STATIC_URL") or os.environ.get("RAILWAY_SERVICE_ID"):
             logger.info("Running in Railway environment")
-            try:
-                if os.path.exists(chromedriver_path):
-                    service = Service(chromedriver_path)
-                    driver = webdriver.Chrome(service=service, options=chrome_options)
-                    return driver
-                else:
-                    # Fall back to letting Chrome find the appropriate driver
-                    driver = webdriver.Chrome(options=chrome_options)
-                    return driver
-            except Exception as e:
-                logger.error(f"Failed with explicit path: {str(e)}")
-                # Fall through to default method
-        
+
+            if os.path.exists(chromedriver_path):
+                logger.info(f"Using system ChromeDriver: {chromedriver_path}")
+                service = Service(chromedriver_path)
+                driver = webdriver.Chrome(service=service, options=chrome_options)
+                return driver
+            else:
+                logger.warning("ChromeDriver path not found, falling back to WebDriverManager")
+
         # Standard ChromeDriverManager approach for development
         service = Service(ChromeDriverManager().install())
         driver = webdriver.Chrome(service=service, options=chrome_options)
-        
+
         logger.info("Chrome WebDriver initialized successfully")
         return driver
-        
+
     except Exception as e:
         logger.error(f"Failed to initialize Chrome WebDriver: {str(e)}")
         raise
