@@ -27,8 +27,8 @@ RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key
 
 # Install ChromeDriver (Specific version)
 # Replace with the correct ChromeDriver version for your Chrome version
-RUN wget https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip && \
-    unzip chromedriver_linux64.zip && \
+RUN wget https://storage.googleapis.com/chrome-for-testing-public/134.0.6998.35/linux64/chromedriver-linux64.zip && \
+    unzip chromedriver-linux64.zip && \
     chmod +x chromedriver && \
     mv chromedriver /usr/local/bin/
 
