@@ -20,12 +20,17 @@ RUN apt-get update && apt-get install -y \
     libappindicator3-1 \
     xdg-utils
 
-# ✅ Install Google Chrome (Stable)
+# Install Google Chrome (Stable)
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
     echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google.list && \
     apt-get update && apt-get install -y google-chrome-stable
 
-# ✅ WebDriver Manager will install ChromeDriver at runtime, so no need to download it manually
+# Install ChromeDriver (Specific version)
+# Replace with the correct ChromeDriver version for your Chrome version
+RUN wget https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip && \
+    unzip chromedriver_linux64.zip && \
+    chmod +x chromedriver && \
+    mv chromedriver /usr/local/bin/
 
 # Set environment variables
 ENV CHROME_BIN=/usr/bin/google-chrome
@@ -38,9 +43,9 @@ WORKDIR /app
 COPY . .
 
 # Upgrade pip safely
-RUN pip install --upgrade pip 
+RUN pip install --upgrade pip
 
-# ✅ Install dependencies (including WebDriver Manager)
+# Install dependencies (excluding WebDriver Manager)
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Expose Railway-assigned port
