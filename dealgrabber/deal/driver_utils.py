@@ -22,7 +22,7 @@ def get_chrome_driver():
         chrome_options.binary_location = "/usr/bin/google-chrome"  # ✅ Use correct Chrome path
 
         # Use the manually installed ChromeDriver 114
-        service = Service("/usr/bin/chromedriver")  # ✅ Set ChromeDriver path explicitly
+        service = Service("/usr/local/bin/chromedriver")  # ✅ Set ChromeDriver path explicitly
         driver = webdriver.Chrome(service=service, options=chrome_options)
 
         logger.info("Chrome WebDriver initialized successfully")
