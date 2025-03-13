@@ -47,11 +47,10 @@ def search_product_route():
 
     return render_template("search_product.html")  # Renders search form
 
-
-@app.route("/select-link", methods=["POST"])
+@app.route("/select-link", methods=["GET", "POST"])
 def select_link():
-    selected_link = request.form.get("selected_link", "")
-    
+    selected_link = request.args.get("selected_link", "")  # ✅ Change to GET
+
     if not selected_link:
         return redirect(url_for("search_product_route"))  # Redirect if no link selected
 
