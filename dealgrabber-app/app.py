@@ -19,6 +19,9 @@ def get_db_connection():
 
 @app.route("/")
 def home():
+    session.pop("result_list", None)   # Remove previous search results
+    session.pop("product_info", None)  # Remove previously selected product
+    session.pop("email", None)  # Remove previously selected product
     return render_template("index.html")  # Homepage
 
 @app.route("/search-product", methods=["GET", "POST"])
@@ -169,18 +172,39 @@ def add_price():
 @app.route("/delete-product", methods=["GET", "POST"])
 def delete_product():
     if request.method == "POST":
-        email = request.form["email"]
-        product_link = request.form["product_link"]
+        email = request.form.get("email", "").strip()
 
-        try:
-            db_handler = DatabaseHandler()  # ✅ Initialize Database Handler
-            db_handler.delete_request(email, product_link)  # ✅ Call delete function
+        if not email:
+            return render_template("delete_product.html", error="Please enter your email.")
 
-            return render_template("confirmation.html", message="Your product notification has been removed.")
-        except Exception as e:
-            return render_template("error.html", error=str(e))
+        # ✅ Fetch notifications dynamically
+        db_handler = DatabaseHandler()
+        availability_notifications = db_handler.get_availability_notifications(email)
+        price_notifications = db_handler.get_price_notifications(email)
 
-    return render_template("delete_product.html")  # Renders delete request page
+        if not availability_notifications and not price_notifications:
+            return render_template("delete_product.html", error="No notifications found for this email.")
+
+        return render_template("delete_product.html", email=email, 
+                               availability_notifications=availability_notifications,
+                               price_notifications=price_notifications)
+
+    return render_template("delete_product.html")
+
+@app.route("/confirm-delete-notification", methods=["POST"])
+def confirm_delete_notification():
+    email = request.form.get("email", "").strip()
+    notification_id = request.form.get("notification_id", "").strip()
+    notification_type = request.form.get("notification_type", "").strip()
+
+    if not email or not notification_id:
+        return redirect(url_for("delete_product", error="Invalid request."))
+
+    db_handler = DatabaseHandler()
+    db_handler.delete_request(notification_id, email, notification_type)
+
+    return redirect(url_for("delete_product", email=email, success="Notification deleted successfully."))
+
 
 if __name__ == "__main__":
     app.run(debug=True,host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))

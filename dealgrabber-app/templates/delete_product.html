@@ -13,27 +13,53 @@
                 <h2>Unsubscribe from Notifications</h2>
             </div>
             <div class="card-body">
-                <form action="/delete-product" method="post">
+                <form method="POST" action="{{ url_for('delete_product') }}">
                     <div class="mb-3">
-                        <label for="email" class="form-label">Email address</label>
-                        <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
-                        <div class="form-text">The email address you used for notifications.</div>
+                        <label for="email" class="form-label">Enter your email:</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
                     </div>
-                    
-                    <div class="mb-3">
-                        <label for="product_link" class="form-label">Product Link</label>
-                        <input type="text" class="form-control" id="product_link" name="product_link" placeholder="Paste the product URL" required>
-                        <div class="form-text">Enter the full product link you subscribed to.</div>
-                    </div>
-                    
-                    <button type="submit" class="btn btn-danger">Unsubscribe</button>
+                    <button type="submit" class="btn btn-danger">Find My Notifications</button>
                 </form>
             </div>
-            
-            <div class="card-footer">
-                <a href="/" class="btn btn-secondary">Return to Home</a>
-            </div>
         </div>
+
+        {% if availability_notifications or price_notifications %}
+        <h4 class="mt-4">Your Notifications:</h4>
+
+        {% if availability_notifications %}
+        <h5>Availability Notifications:</h5>
+        <ul class="list-group">
+            {% for notification in availability_notifications %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <a href="{{ notification[2] }}" target="_blank">{{ notification[1] }}</a>
+                <form method="POST" action="{{ url_for('confirm_delete_notification') }}" style="display: inline;">
+                    <input type="hidden" name="email" value="{{ email }}">
+                    <input type="hidden" name="notification_id" value="{{ notification[0] }}">
+                    <input type="hidden" name="notification_type" value="availability">
+                    <button type="submit" class="btn btn-sm btn-danger">❌ Delete</button>
+                </form>
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% if price_notifications %}
+        <h5 class="mt-3">Price Notifications:</h5>
+        <ul class="list-group">
+            {% for notification in price_notifications %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <a href="{{ notification[2] }}" target="_blank">{{ notification[1] }} (Target Price: ₹{{ notification[3] }})</a>
+                <form method="POST" action="{{ url_for('confirm_delete_notification') }}" style="display: inline;">
+                    <input type="hidden" name="email" value="{{ email }}">
+                    <input type="hidden" name="notification_id" value="{{ notification[0] }}">
+                    <input type="hidden" name="notification_type" value="price">
+                    <button type="submit" class="btn btn-sm btn-danger">❌ Delete</button>
+                </form>
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% endif %}
     </div>
 </body>
 </html>
