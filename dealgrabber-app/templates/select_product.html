@@ -5,16 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Select Product - DealGrabber</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script>
+        function showDropdown() {
+            document.getElementById("customLinkDropdown").classList.toggle("show");
+        }
+
+        // Close dropdown if clicked outside
+        window.onclick = function(event) {
+            if (!event.target.matches('.dropdown-btn')) {
+                var dropdowns = document.getElementsByClassName("dropdown-menu");
+                for (var i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .dropdown-menu.show { display: block; }
+    </style>
 </head>
 <body>
     <div class="container mt-5">
         <h2 class="text-center mb-4">Select Your Product</h2>
+        
+        <!-- Back to Search & Set Link Myself -->
+
         <div class="row">
             {% for product in result_list[:4] %}
             <div class="col-md-3">
-                <div class="card">
+                <div class="card" style="width: 18rem; height: 370px;">
                     <a href="{{ url_for('select_link', selected_link=product.link) }}" class="text-decoration-none">
-                        <img src="{{ product.image_link }}" class="card-img-top" alt="{{ product.title }}">
+                        <div class="image-container" style="height: 200px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                            <img src="{{ product.image_link }}" class="card-img" alt="{{ product.title }}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                        </div>
                         <div class="card-body text-center">
                             <h5 class="card-title">{{ product.title }}</h5>
                             <p class="card-text text-success fw-bold">{{ product.price }}</p>
@@ -23,6 +49,18 @@
                 </div>
             </div>
             {% endfor %}
+        </div>
+        <div class="text-center mb-4">
+            <a href="{{ url_for('search_product_route') }}" class="btn btn-secondary">🔍 Go Back to Search</a>
+            
+            <!-- Dropdown for Set Link Myself -->
+            <div class="btn-group">
+                <button class="btn btn-warning dropdown-btn" onclick="showDropdown()">📝 Set Link Myself ▼</button>
+                <div id="customLinkDropdown" class="dropdown-menu">
+                    <a class="dropdown-item" href="{{ url_for('add_availability') }}">📩 Set Availability Notification</a>
+                    <a class="dropdown-item" href="{{ url_for('add_price') }}">💰 Set Price Notification</a>
+                </div>
+            </div>
         </div>
     </div>
 </body>
