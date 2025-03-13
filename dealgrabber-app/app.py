@@ -21,9 +21,8 @@ def get_db_connection():
 def home():
     return render_template("index.html")  # Homepage
 
-
 @app.route("/search-product", methods=["GET", "POST"])
-def search_product_route():  # Renamed to avoid recursion error
+def search_product_route():
     if request.method == "POST":
         product_name = request.form.get("product_name", "").strip()
         email = request.form.get("email", "").strip()
@@ -32,39 +31,40 @@ def search_product_route():  # Renamed to avoid recursion error
         session["email"] = email
 
         try:
-            # ✅ Call the function directly instead of subprocess
-            info_dict = search_product_run(product_name)  
+            # ✅ Get the list of top 5 results
+            result_list = search_product_run(product_name)
 
-            # ✅ Always return a **single** link
-            if "link" in info_dict:
-                session["product_info"] = info_dict
-                return render_template("product_info.html", product=info_dict, email=email)
-            
-            # 🔴 If no link is found, instruct the user to refine the search
-            return render_template("error.html", error="No valid product link found. Please refine your search.")
+            if result_list:
+                # ✅ Store the result list in session so it can be used later
+                session["result_list"] = result_list
+                return render_template("select_product.html", result_list=result_list, email=email)
+
+            # 🔴 If no results found, show error message
+            return render_template("error.html", error="No valid product found. Please refine your search.")
 
         except Exception as e:
             return jsonify({"error": str(e)}), 500  # Only one return statement
 
     return render_template("search_product.html")  # Renders search form
 
+
 @app.route("/select-link", methods=["POST"])
 def select_link():
     selected_link = request.form.get("selected_link", "")
-    custom_link = request.form.get("custom_link", "")
     
-    link = custom_link if custom_link else selected_link
-    shoesize = session.get('shoesize', 0)
-    email = session.get('email', '')
-    
-    product_info = {
-        "link": link,
-        "shoesize": shoesize
-    }
-    
-    session['product_info'] = product_info
-    
-    return render_template("product_info.html", product=product_info, email=email)
+    if not selected_link:
+        return redirect(url_for("search_product_route"))  # Redirect if no link selected
+
+    # ✅ Find the selected product from the stored result list
+    product_info = next((p for p in session.get('result_list', []) if p["link"] == selected_link), {})
+
+    if not product_info:
+        return render_template("error.html", error="Selected product not found. Try again.")
+
+    # ✅ Store selected product in session
+    session["product_info"] = product_info
+
+    return render_template("product_info.html", product=product_info, email=session.get("email", ""))
 
 @app.route("/setup-notification", methods=["GET"])
 def setup_notification():

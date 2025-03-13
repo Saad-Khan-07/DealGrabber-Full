@@ -8,36 +8,21 @@
 </head>
 <body>
     <div class="container mt-5">
-        <div class="card">
-            <div class="card-header bg-info text-white">
-                <h2>Select Product</h2>
+        <h2 class="text-center mb-4">Select Your Product</h2>
+        <div class="row">
+            {% for product in result_list[:4] %}
+            <div class="col-md-3">
+                <div class="card">
+                    <a href="{{ url_for('select_link', selected_link=product.link) }}" class="text-decoration-none">
+                        <img src="{{ product.image_link }}" class="card-img-top" alt="{{ product.title }}">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">{{ product.title }}</h5>
+                            <p class="card-text text-success fw-bold">{{ product.price }}</p>
+                        </div>
+                    </a>
+                </div>
             </div>
-            <div class="card-body">
-                <p>📌 Please **click on the link below** to verify if it matches the product you are looking for.</p> <p>🔍 If the link does not lead to the correct product, <br>**submit the form** as it is. You will have the option to **update the product link** in the next step.</p>
-                <form method="POST" action="/select-link">
-                    {% for i, link in enumerate(links) %}
-                    <div class="form-check mb-3">
-                        <input class="form-check-input" type="radio" name="selected_link" id="link{{ i+1 }}" value="{{ link }}" {% if i == 0 %}checked{% endif %}>
-                        <label class="form-check-label" for="link{{ i+1 }}">
-                            <div class="d-flex flex-column">
-                                <span>Option {{ i+1 }}</span>
-                                <a href="{{ link }}" target="_blank" class="text-break">{{ link }}</a>
-                            </div>
-                        </label>
-                    </div>
-                    {% endfor %}
-                    
-                    <div class="mb-3 mt-4">
-                        <label for="custom_link" class="form-label">Or enter your own product link:</label>
-                        <input type="url" class="form-control" id="custom_link" name="custom_link" placeholder="https://www.flipkart.com/...">
-                    </div>
-                    
-                    <button type="submit" class="btn btn-primary">Continue</button>
-                </form>
-            </div>
-            <div class="card-footer">
-                <a href="/" class="btn btn-secondary">Return to Home</a>
-            </div>
+            {% endfor %}
         </div>
     </div>
 </body>

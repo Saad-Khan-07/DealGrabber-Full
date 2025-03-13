@@ -20,19 +20,14 @@ def search_product_run(product_name=None):
     if product_name:
         # Need to modify ProductInfo to accept product_name parameter
         # For now, we'll set it directly
-        productinfo.productname = product_name
-        productinfo.driver.get(f"https://www.flipkart.com/")
-        searchinput = productinfo.driver.find_element(By.CSS_SELECTOR, 'input[title="Search for Products, Brands and More"]')
-        searchinput.send_keys(product_name)
-        searchinput.send_keys(Keys.RETURN)
-        productinfo.driver.implicitly_wait(5)
+        productinfo.search_product(product_name)
     else:
         productinfo.search_product()
     
-    info_dict = productinfo.get_product()
+    top_results_list = productinfo.get_product()
     productinfo.close_driver()
-    print(json.dumps(info_dict))
-    return info_dict
+    print(json.dumps(top_results_list))
+    return top_results_list
 
 def check_availability(link, shoesize, email):
     """Check product availability and set up notification"""
