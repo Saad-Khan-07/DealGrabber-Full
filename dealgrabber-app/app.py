@@ -67,6 +67,17 @@ def select_link():
 
     return render_template("product_info.html", product=product_info, email=session.get("email", ""))
 
+@app.route("/select-product", methods=["GET"])
+def select_product_route():
+    result_list = session.get("result_list", [])
+
+    # 🔥 If no search results exist, force user to search again
+    if not result_list:
+        return redirect(url_for("search_product_route"))
+
+    return render_template("select_product.html", result_list=result_list, email=session.get("email", ""))
+
+
 @app.route("/setup-notification", methods=["GET"])
 def setup_notification():
     notification_type = request.args.get("type", "")
