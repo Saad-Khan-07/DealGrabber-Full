@@ -23,6 +23,8 @@ def home():
 
 @app.route("/search-product", methods=["GET", "POST"])
 def search_product_route():
+    session.pop("result_list", None)   # Remove previous search results
+    session.pop("product_info", None)  # Remove previously selected product
     if request.method == "POST":
         product_name = request.form.get("product_name", "").strip()
         email = request.form.get("email", "").strip()
