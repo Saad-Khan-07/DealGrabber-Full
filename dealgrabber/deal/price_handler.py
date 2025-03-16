@@ -1,5 +1,6 @@
 from selenium.webdriver.common.by import By
-import time
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from dealgrabber.deal.driver_utils import get_chrome_driver
 
 class HandlePrice:
@@ -11,34 +12,37 @@ class HandlePrice:
     
     def check_price(self):
         self.driver.get(self.link)
+
         if int(self.shoesize) > 0:
             try:
-                sizelist = self.driver.find_elements(By.XPATH, "//li[contains(@id, 'swatch') and contains(@id, '-size')]")
+                sizelist = WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_all_elements_located((By.XPATH, "//li[contains(@id, 'swatch') and contains(@id, '-size')]"))
+                )
                 for size in sizelist:
                     try:
                         sizebutton = size.find_element(By.XPATH, f".//a[contains(text(), '{self.shoesize}')]")
-                        time.sleep(0.5)
                         sizebutton.click()
-                        time.sleep(5)
+                        WebDriverWait(self.driver, 5).until(EC.staleness_of(sizebutton))  # Wait for page refresh
                         break
                     except:
                         continue
             except Exception as e:
                 print(f"No {self.shoesize} available for this shoe")
-                print(e)
 
         try:
-            name = self.driver.find_element(By.CSS_SELECTOR, "h1")
-            nametext = name.text.strip()
+            name = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, "h1"))
+            ).text.strip()
 
-            getprice = self.driver.find_element(By.XPATH, "//div[contains(text(), '₹')]")
+            getprice = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located((By.XPATH, "//div[contains(text(), '₹')]"))
+            )
             curprice = getprice.text.strip().replace("₹", "").replace(",", "")
             
-            return {"name": nametext, "link": self.link, "price": self.threshold_price, "current_price": curprice}
-        
+            return {"name": name, "link": self.link, "price": self.threshold_price, "current_price": curprice}
+
         except Exception as e:
             print("Couldn't find the price of the element")
-            print(e)
             return {"name": "Unknown", "link": self.link, "price": self.threshold_price, "current_price": "N/A"}
         
     def closedriver(self):
