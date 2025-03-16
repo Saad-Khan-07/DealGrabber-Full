@@ -32,8 +32,12 @@ class DatabaseHandler:
         return exists
     
     def store_availability_request(self, email, product_link, name, shoesize):
-        """Inserts an availability request into the database."""
+        """Inserts an availability request into the database if it doesn't exist."""
         try:
+            # First check if this request already exists
+            if self.check_availability_exists(email, product_link):
+                return False, "An availability request for this product already exists."
+                
             conn = get_db_connection()
             cursor = conn.cursor()
             cursor.execute("""
@@ -43,12 +47,18 @@ class DatabaseHandler:
             conn.commit()
             cursor.close()
             conn.close()
+            return True, "Success"
         except psycopg2.Error as e:
             print(f"Database Error (store_availability_request): {e}")
+            return False, str(e)
 
     def store_price_request(self, email, product_link, name, target_price, shoesize):
-        """Inserts a price request into the database."""
+        """Inserts a price request into the database if it doesn't exist."""
         try:
+            # First check if this request already exists
+            if self.check_price_exists(email, product_link):
+                return False, "A price request for this product already exists."
+                
             conn = get_db_connection()
             cursor = conn.cursor()
             cursor.execute("""
@@ -58,8 +68,10 @@ class DatabaseHandler:
             conn.commit()
             cursor.close()
             conn.close()
+            return True, "Success"
         except psycopg2.Error as e:
             print(f"Database Error (store_price_request): {e}")
+            return False, str(e)
 
     def get_all_availability_requests(self):
         """Fetches all records from the availability_requests table."""

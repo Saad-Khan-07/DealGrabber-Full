@@ -80,7 +80,6 @@ def select_product_route():
 
     return render_template("select_product.html", result_list=result_list, email=session.get("email", ""))
 
-
 @app.route("/setup-notification", methods=["GET"])
 def setup_notification():
     notification_type = request.args.get("type", "")
@@ -101,21 +100,25 @@ def add_availability():
         shoesize = request.form.get("shoesize", "0")  # Optional field
 
         try:
-            # ✅ Call `check_availability` directly instead of using subprocess
+            # Check if we already have this request
+            db_handler = DatabaseHandler()
+            
+            # Get product details first
             dataset = check_availability(product_link, shoesize, email)
-
-            # Store in PostgreSQL database as well
-            conn = get_db_connection()
-            cursor = conn.cursor()
-            cursor.execute("""
-                INSERT INTO availability_requests (email, product_link, product_name, shoesize)
-                VALUES (%s, %s, %s, %s)
-            """, (email, product_link, dataset.get("name", ""), shoesize))
-            conn.commit()
-            cursor.close()
-            conn.close()
-
-            return render_template("confirmation.html", message="Your availability notification has been set up!")
+            
+            # Try to store in database with proper error handling
+            success, message = db_handler.store_availability_request(
+                email, 
+                product_link, 
+                dataset.get("name", "Unknown Product"), 
+                shoesize
+            )
+            
+            if success:
+                return render_template("confirmation.html", message="Your availability notification has been set up!")
+            else:
+                return render_template("error.html", error=message)
+                
         except Exception as e:
             return render_template("error.html", error=str(e))
 
@@ -130,7 +133,6 @@ def add_availability():
         email=email,
     )
 
-# 📌 Route for adding a product for price notification
 @app.route("/add-price", methods=["GET", "POST"])
 def add_price():
     if request.method == "POST":
@@ -140,21 +142,26 @@ def add_price():
         shoesize = request.form.get("shoesize", "0")  # Optional field
 
         try:
-            # ✅ Call `check_price` directly instead of using subprocess
+            # Check if we already have this request
+            db_handler = DatabaseHandler()
+            
+            # Get product details first
             dataset = check_price(product_link, shoesize, target_price, email)
-
-            # Store in PostgreSQL database as well
-            conn = get_db_connection()
-            cursor = conn.cursor()
-            cursor.execute("""
-                INSERT INTO price_requests (email, product_link, product_name, target_price, shoesize)
-                VALUES (%s, %s, %s, %s, %s)
-            """, (email, product_link, dataset.get("name", ""), target_price, shoesize))
-            conn.commit()
-            cursor.close()
-            conn.close()
-
-            return render_template("confirmation.html", message="Your price notification has been set up!")
+            
+            # Try to store in database with proper error handling
+            success, message = db_handler.store_price_request(
+                email, 
+                product_link, 
+                dataset.get("name", "Unknown Product"), 
+                target_price, 
+                shoesize
+            )
+            
+            if success:
+                return render_template("confirmation.html", message="Your price notification has been set up!")
+            else:
+                return render_template("error.html", error=message)
+                
         except Exception as e:
             return render_template("error.html", error=str(e))
 
