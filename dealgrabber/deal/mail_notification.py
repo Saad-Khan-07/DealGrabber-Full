@@ -99,6 +99,7 @@ class ConfirmationMail:
 
 
 
+
 # shoes = {"shoesize": 9,"shoes": True}
 # link="https://www.flipkart.com/puma-rungryp-sneakers-men/p/itm7b4744135bc9c?pid=SHOGQAZD7MVX94YU&lid=LSTSHOGQAZD7MVX94YURTWUXM&marketplace=FLIPKART&q=puma+shoes&store=osp&srno=s_1_3&otracker=search&otracker1=search&fm=Search&iid=f2d678a8-fab2-47a9-adfc-860f6007712b.SHOGQAZD7MVX94YU.SEARCH&ppt=sp&ppn=sp&ssid=fx5xfr2k2o0000001740292012231&qH=12daa41359850f83"
 # name= "FULL FORCE LO Sneakers For Men"

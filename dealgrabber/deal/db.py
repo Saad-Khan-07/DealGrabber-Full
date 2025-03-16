@@ -7,6 +7,30 @@ def get_db_connection():
     return psycopg2.connect(DATABASE_URL)
 
 class DatabaseHandler:
+    def check_availability_exists(self, email, product_link):
+        """Checks if an availability request already exists for the given email and product link."""
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT EXISTS(SELECT 1 FROM availability_requests WHERE email = %s AND product_link = %s)
+        """, (email, product_link))
+        exists = cursor.fetchone()[0]
+        cursor.close()
+        conn.close()
+        return exists
+
+    def check_price_exists(self, email, product_link):
+        """Checks if a price request already exists for the given email and product link."""
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT EXISTS(SELECT 1 FROM price_requests WHERE email = %s AND product_link = %s)
+        """, (email, product_link))
+        exists = cursor.fetchone()[0]
+        cursor.close()
+        conn.close()
+        return exists
+    
     def store_availability_request(self, email, product_link, name, shoesize):
         """Inserts an availability request into the database."""
         try:

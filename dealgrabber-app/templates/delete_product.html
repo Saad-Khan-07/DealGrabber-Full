@@ -53,7 +53,7 @@
                     <input type="hidden" name="email" value="{{ email }}">
                     <input type="hidden" name="notification_id" value="{{ notification[0] }}">
                     <input type="hidden" name="notification_type" value="price">
-                    <button type="submit" class="btn btn-sm btn-danger">❌ Delete</button>
+                    <button type="submit" class="btn btn-sm btn-danger" onclick="{alert('notification deleted successfully'); window.location.href='/';}">❌ Delete</button>
                 </form>
             </li>
             {% endfor %}
