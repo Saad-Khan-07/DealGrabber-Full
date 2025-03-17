@@ -52,7 +52,6 @@ def select_link():
     session["product_info"] = product_info
     return render_template("product_info.html", product=product_info, email=session.get("email", ""))
 
-
 @app.route("/select-product", methods=["GET"])
 def select_product_route():
     result_list = session.get("result_list", [])

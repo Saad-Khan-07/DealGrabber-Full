@@ -45,5 +45,5 @@ class HandlePrice:
             print("Couldn't find the price of the element")
             return {"name": "Unknown", "link": self.link, "price": self.threshold_price, "current_price": "N/A"}
         
-    def closedriver(self):
+    def close_driver(self):
         self.driver.quit()
