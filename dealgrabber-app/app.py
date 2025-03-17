@@ -84,7 +84,6 @@ def select_product_route():
 @app.route("/setup-notification", methods=["GET"])
 def setup_notification():
     notification_type = request.args.get("type", "")
-    
     if notification_type == "availability":
         return redirect(url_for("add_availability"))
     elif notification_type == "price":
@@ -93,106 +92,74 @@ def setup_notification():
         return redirect(url_for("home"))
 
 # 📌 Route for adding a product for availability notification
+
 @app.route("/add-availability", methods=["GET", "POST"])
 def add_availability():
+    db_handler = DatabaseHandler()
     if request.method == "POST":
         email = request.form["email"]
         product_link = request.form["product_link"]
-        shoesize = request.form.get("shoesize", "0")  # Optional field
+        shoesize = request.form.get("shoesize", "0")
 
-        try:
-            # ✅ Call `check_availability` directly instead of using subprocess
-            dataset = check_availability(product_link, shoesize, email)
+        if db_handler.check_availability_exists(email, product_link):
+            return render_template("error.html", error="You already have an availability request for this product.")
 
-            # Store in PostgreSQL database as well
-            conn = get_db_connection()
-            cursor = conn.cursor()
-            cursor.execute("""
-                INSERT INTO availability_requests (email, product_link, product_name, shoesize)
-                VALUES (%s, %s, %s, %s)
-            """, (email, product_link, dataset.get("name", ""), shoesize))
-            conn.commit()
-            cursor.close()
-            conn.close()
+        dataset = check_availability(product_link, shoesize, email)
+        success, message = db_handler.store_availability_request(email, product_link, dataset.get("name", ""), shoesize)
 
+        if success:
             return render_template("confirmation.html", message="Your availability notification has been set up!")
-        except Exception as e:
-            return render_template("error.html", error=str(e))
+        return render_template("error.html", error=message)
 
-    # GET request - prepopulate form with session data
     product_info = session.get("product_info", {})
     email = session.get("email", "")
+    return render_template("add_availability.html", product_link=product_info.get("link", ""), shoesize=product_info.get("shoesize", ""), email=email)
 
-    return render_template(
-        "add_availability.html",
-        product_link=product_info.get("link", ""),
-        shoesize=product_info.get("shoesize", ""),
-        email=email,
-    )
-
-# 📌 Route for adding a product for price notification
 @app.route("/add-price", methods=["GET", "POST"])
 def add_price():
+    db_handler = DatabaseHandler()
     if request.method == "POST":
         email = request.form["email"]
         product_link = request.form["product_link"]
         target_price = request.form["target_price"]
-        shoesize = request.form.get("shoesize", "0")  # Optional field
+        shoesize = request.form.get("shoesize", "0")
 
-        try:
-            # ✅ Call `check_price` directly instead of using subprocess
-            dataset = check_price(product_link, shoesize, target_price, email)
+        if db_handler.check_price_exists(email, product_link):
+            return render_template("error.html", error="You already have a price request for this product.")
 
-            # Store in PostgreSQL database as well
-            conn = get_db_connection()
-            cursor = conn.cursor()
-            cursor.execute("""
-                INSERT INTO price_requests (email, product_link, product_name, target_price, shoesize)
-                VALUES (%s, %s, %s, %s, %s)
-            """, (email, product_link, dataset.get("name", ""), target_price, shoesize))
-            conn.commit()
-            cursor.close()
-            conn.close()
+        dataset = check_price(product_link, shoesize, target_price, email)
+        success, message = db_handler.store_price_request(email, product_link, dataset.get("name", ""), target_price, shoesize)
 
+        if success:
             return render_template("confirmation.html", message="Your price notification has been set up!")
-        except Exception as e:
-            return render_template("error.html", error=str(e))
+        return render_template("error.html", error=message)
 
-    # GET request - prepopulate form with session data
     product_info = session.get("product_info", {})
     email = session.get("email", "")
+    return render_template("add_price.html", product_link=product_info.get("link", ""), shoesize=product_info.get("shoesize", ""), email=email)
 
-    return render_template(
-        "add_price.html",
-        product_link=product_info.get("link", ""),
-        shoesize=product_info.get("shoesize", ""),
-        email=email,
-    )
 # 📌 Route for deleting a product notification
 @app.route("/delete-product", methods=["GET", "POST"])
 def delete_product():
+    db_handler = DatabaseHandler()
     if request.method == "POST":
         email = request.form.get("email", "").strip()
-
         if not email:
             return render_template("delete_product.html", error="Please enter your email.")
 
-        # ✅ Fetch notifications dynamically
-        db_handler = DatabaseHandler()
         availability_notifications = db_handler.get_availability_notifications(email)
         price_notifications = db_handler.get_price_notifications(email)
 
         if not availability_notifications and not price_notifications:
             return render_template("delete_product.html", error="No notifications found for this email.")
 
-        return render_template("delete_product.html", email=email, 
-                               availability_notifications=availability_notifications,
-                               price_notifications=price_notifications)
+        return render_template("delete_product.html", email=email, availability_notifications=availability_notifications, price_notifications=price_notifications)
 
     return render_template("delete_product.html")
 
 @app.route("/confirm-delete-notification", methods=["POST"])
 def confirm_delete_notification():
+    db_handler = DatabaseHandler()
     email = request.form.get("email", "").strip()
     notification_id = request.form.get("notification_id", "").strip()
     notification_type = request.form.get("notification_type", "").strip()
@@ -200,10 +167,11 @@ def confirm_delete_notification():
     if not email or not notification_id:
         return redirect(url_for("delete_product", error="Invalid request."))
 
-    db_handler = DatabaseHandler()
-    db_handler.delete_request(notification_id, email, notification_type)
+    success = db_handler.delete_request(notification_id, email, notification_type)
 
-    return redirect(url_for("delete_product", email=email, success="Notification deleted successfully."))
+    if success:
+        return redirect(url_for("delete_product", email=email, success="Notification deleted successfully."))
+    return redirect(url_for("delete_product", email=email, error="Failed to delete notification."))
 
 if __name__ == "__main__":
     app.run(debug=True,host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
