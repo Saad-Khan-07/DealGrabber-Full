@@ -83,12 +83,15 @@ def add_availability():
         if db_handler.check_availability_exists(email, product_link):
             return render_template("error.html", error="You already have an availability request for this product.")
 
-        dataset = check_availability(product_link, shoesize, email)
-        success, message = db_handler.store_availability_request(email, product_link, dataset.get("name", ""), shoesize)
-
-        if success:
-            return render_template("confirmation.html", message="Your availability notification has been set up!")
-        return render_template("error.html", error=message)
+        try:
+            # Let check_availability handle the database operation
+            dataset, success = check_availability(product_link, shoesize, email)
+            
+            if success:
+                return render_template("confirmation.html", message="Your availability notification has been set up!")
+            return render_template("error.html", error="Failed to set up notification.")
+        except Exception as e:
+            return render_template("error.html", error=str(e))
 
     product_info = session.get("product_info", {})
     email = session.get("email", "")
@@ -106,12 +109,14 @@ def add_price():
         if db_handler.check_price_exists(email, product_link):
             return render_template("error.html", error="You already have a price request for this product.")
 
-        dataset = check_price(product_link, shoesize, target_price, email)
-        success, message = db_handler.store_price_request(email, product_link, dataset.get("name", ""), target_price, shoesize)
-
-        if success:
+        try:
+            # Let check_price handle the database operation
+            dataset = check_price(product_link, shoesize, target_price, email)
+            
+            # If we got here without exceptions, assume it worked
             return render_template("confirmation.html", message="Your price notification has been set up!")
-        return render_template("error.html", error=message)
+        except Exception as e:
+            return render_template("error.html", error=str(e))
 
     product_info = session.get("product_info", {})
     email = session.get("email", "")

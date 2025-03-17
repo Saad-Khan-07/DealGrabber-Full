@@ -35,7 +35,7 @@ def check_availability(link, shoesize, email):
         smtp_client.close()
 
     print(json.dumps(dataset))
-    return dataset
+    return dataset, success
 
 def check_price(link, shoesize, target_price, email):
     """Check product price and set up notification"""
