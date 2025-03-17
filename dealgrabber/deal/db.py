@@ -91,7 +91,12 @@ class DatabaseHandler:
             cursor.execute("""
                 SELECT EXISTS(SELECT 1 FROM availability_requests WHERE email = %s AND product_link = %s)
             """, (email, product_link))
-            return cursor.fetchone()[0]
+            exists = cursor.fetchone()[0]
+            
+            # ✅ Debug Logging
+            print(f"[DEBUG] Checking availability existence for Email: {email}, Product Link: {product_link} → Exists: {exists}")
+            
+            return exists
 
     def check_price_exists(self, email, product_link):
         """Checks if a price request already exists for the given email and product link."""
@@ -99,7 +104,13 @@ class DatabaseHandler:
             cursor.execute("""
                 SELECT EXISTS(SELECT 1 FROM price_requests WHERE email = %s AND product_link = %s)
             """, (email, product_link))
-            return cursor.fetchone()[0]
+            exists = cursor.fetchone()[0]
+
+            # ✅ Debug Logging
+            print(f"[DEBUG] Checking price existence for Email: {email}, Product Link: {product_link} → Exists: {exists}")
+            
+            return exists
+
     
     def store_availability_request(self, email, product_link, name, shoesize):
         """Inserts an availability request into the database if it doesn't exist."""
