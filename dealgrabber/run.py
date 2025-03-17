@@ -7,68 +7,54 @@ import argparse
 import json
 
 def search_product_run(product_name=None):
-    """
-    Search for product and return product information
-    If product_name is provided, use it instead of asking user
-    """
+    """Search for product and return product information"""
     productinfo = ProductInfo()
-    
-    # Use provided product name if available, otherwise let ProductInfo ask
-    if product_name:
-        # Need to modify ProductInfo to accept product_name parameter
-        # For now, we'll set it directly
-        productinfo.search_product(product_name)
-    else:
-        productinfo.search_product()
-    
+    productinfo.search_product(product_name)
     top_results_list = productinfo.get_product()
     productinfo.close_driver()
+    
     print(json.dumps(top_results_list))
     return top_results_list
 
 def check_availability(link, shoesize, email):
     """Check product availability and set up notification"""
-    datahandler = DatabaseHandler()
-    
     ca = CheckAvailability(link, shoesize)
     dataset = ca.check_availability()
     ca.close_driver()
-    
-    # Initialize SMTP client for email
+
     smtp_client = SMTPClient()
     
     try:
-        datahandler.store_availability_request(email, dataset["link"], dataset["name"], shoesize)
-        cm = ConfirmationMail(smtp_client, email)
-        cm.send_confirmation()
+        success, message = DatabaseHandler().store_availability_request(email, dataset["link"], dataset["name"], shoesize)
+        if not success:
+            return {"error": message}
+
+        ConfirmationMail(smtp_client, email).send_confirmation()
         print(f"Availability notification set up for {email}")
     finally:
-        # Make sure to close the SMTP connection
         smtp_client.close()
-    
+
     print(json.dumps(dataset))
     return dataset
 
 def check_price(link, shoesize, target_price, email):
     """Check product price and set up notification"""
-    datahandler = DatabaseHandler()
-    
     hp = HandlePrice(target_price, link, shoesize)
     dataset = hp.check_price()
-    hp.closedriver()
-    
-    # Initialize SMTP client for email
+    hp.close_driver()
+
     smtp_client = SMTPClient()
     
     try:
-        datahandler.store_price_request(email, link, dataset["name"], dataset["price"], shoesize)
-        cm = ConfirmationMail(smtp_client, email)
-        cm.send_confirmation()
+        success, message = DatabaseHandler().store_price_request(email, link, dataset["name"], dataset["price"], shoesize)
+        if not success:
+            return {"error": message}
+
+        ConfirmationMail(smtp_client, email).send_confirmation()
         print(f"Price notification set up for {email}")
     finally:
-        # Make sure to close the SMTP connection
         smtp_client.close()
-    
+
     print(json.dumps(dataset))
     return dataset
 
