@@ -41,17 +41,45 @@ class ProductInfo:
             d = result[i].get_attribute("outerHTML")
             soup = BeautifulSoup(d, "lxml")
             
+            # Link extraction - this works in both layouts
             link_tag = soup.find("a")
             link = f"https://www.flipkart.com{link_tag['href']}" if link_tag and link_tag.get("href") else None
             
+            # Title extraction - try both methods
+            # Method 1: Using title attribute
             title_tag = soup.find("a", title=True)
-            title = title_tag["title"] if title_tag else "No Title"
+            title = title_tag["title"] if title_tag else None
             
+            # Method 2: Using class KzDlHZ if Method 1 fails
+            if not title:
+                title_div = soup.find("div", class_="KzDlHZ")
+                title = title_div.get_text(strip=True) if title_div else "No Title"
+            
+            # Price extraction - try both methods
+            # Method 1: Using string lambda to find ₹
             price_tag = soup.find("div", string=lambda text: text and "₹" in text)
-            price = price_tag.get_text(strip=True) if price_tag else "SOLD OUT"
+            price = price_tag.get_text(strip=True) if price_tag else None
             
+            # Method 2: Using specific class names if Method 1 fails
+            if not price:
+                price_div = soup.find("div", class_="Nx9bqj")
+                if price_div:
+                    price = price_div.get_text(strip=True)
+                else:
+                    # Try another common price class
+                    price_div = soup.find("div", class_="_30jeq3")
+                    price = price_div.get_text(strip=True) if price_div else "SOLD OUT"
+            
+            # Image extraction - this usually works in both layouts
             image_tag = soup.find("img")
             image_link = image_tag["src"] if image_tag and image_tag.get("src") else None
+            
+            # If we still don't have an image, try to find it in a different structure
+            if not image_link:
+                img_div = soup.find("div", class_="_4WELSP")
+                if img_div:
+                    img = img_div.find("img")
+                    image_link = img["src"] if img and img.get("src") else None
             
             top_results.append({
                 "price": price,
