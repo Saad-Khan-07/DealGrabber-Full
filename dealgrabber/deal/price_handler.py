@@ -1,11 +1,11 @@
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from dealgrabber.deal.driver_utils import get_chrome_driver
+from dealgrabber.deal.driver_utils import get_driver, return_driver_to_pool
 
 class HandlePrice:
     def __init__(self, threshold_price, link, shoesize=0):
-        self.driver = get_chrome_driver()
+        self.driver = get_driver()
         self.threshold_price = threshold_price
         self.link = link
         self.shoesize = shoesize
@@ -46,4 +46,4 @@ class HandlePrice:
             return {"name": "Unknown", "link": self.link, "price": self.threshold_price, "current_price": "N/A"}
         
     def close_driver(self):
-        self.driver.quit()
+        return_driver_to_pool(self.driver)

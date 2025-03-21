@@ -6,7 +6,6 @@ from dealgrabber.deal.db import DatabaseHandler
 import argparse
 import json
 import concurrent.futures
-import time
 
 def search_product_run(product_name=None):
     """Search for product and return product information"""
