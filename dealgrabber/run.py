@@ -6,7 +6,7 @@ from dealgrabber.deal.db import DatabaseHandler
 import argparse
 import json
 import concurrent.futures
-from driver_utils import get_driver_from_pool, return_driver_to_pool
+from dealgrabber.deal.driver_utils import get_driver, return_driver_to_pool
 
 def search_product_run(product_name=None):
     """Search for product and return product information (Optimized with ThreadPool)."""
