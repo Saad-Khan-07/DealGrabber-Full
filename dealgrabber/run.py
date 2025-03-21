@@ -4,9 +4,7 @@ from dealgrabber.deal.price_handler import HandlePrice
 from dealgrabber.deal.mail_notification import SMTPClient, ConfirmationMail
 from dealgrabber.deal.db import DatabaseHandler
 import argparse
-import json
 import concurrent.futures
-from dealgrabber.deal.driver_utils import get_driver, return_driver_to_pool
 
 def search_product_run(product_name=None):
     """Search for product and return product information (Optimized with ThreadPool)."""
@@ -14,7 +12,9 @@ def search_product_run(product_name=None):
     productinfo.search_product(product_name)
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
-        top_results_list = list(executor.map(productinfo.get_product, range(5)))  # Parallel fetching
+        future = executor.submit(productinfo.get_product)  # No arguments
+        top_results_list = future.result()
+
     
     productinfo.close_driver()
     return top_results_list
