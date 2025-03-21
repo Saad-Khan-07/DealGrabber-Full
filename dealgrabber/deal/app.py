@@ -3,7 +3,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 from selenium.webdriver.common.keys import Keys
-from driver_utils import get_driver, return_driver_to_pool
+from dealgrabber.deal.driver_utils import get_driver, return_driver_to_pool
 
 class ProductInfo:
     def __init__(self):
