@@ -2,8 +2,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
-from driver_utils import get_driver_from_pool, return_driver_to_pool
-import time
+from selenium.webdriver.common.keys import Keys
+from driver_utils import get_driver, return_driver_to_pool
 
 class ProductInfo:
     def __init__(self):
@@ -11,7 +11,7 @@ class ProductInfo:
         self.price = None
         self.link = None
         self.shoesize = 0
-        self.driver = get_driver_from_pool()
+        self.driver = get_driver()
     
     def search_product(self, productname):
         self.productname = productname
