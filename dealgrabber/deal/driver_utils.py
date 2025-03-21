@@ -26,11 +26,18 @@ def create_driver():
 
 def get_driver():
     """Fetches a WebDriver instance from the pool or creates a new one if needed."""
-    with pool_lock:
-        try:
-            return driver_pool.get(block=False)  # Fetch driver from pool
-        except queue.Empty:
-            return create_driver()  # Create a new driver if pool is empty
+    try:
+        with pool_lock:
+            try:
+                return driver_pool.get(block=False)  # Fetch driver from pool
+            except queue.Empty:
+                return create_driver()  # Create a new driver if pool is empty
+    except Exception as e:
+        import traceback
+        stack_trace = traceback.format_exc()
+        print(f"Error getting driver: {e}")
+        print(f"Stack trace: {stack_trace}")
+        raise  # Re-raise the exception after logging
 
 def return_driver_to_pool(driver):
     """Returns a WebDriver instance to the pool for reuse."""
