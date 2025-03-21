@@ -16,9 +16,8 @@ def check_availability_deal():
             if db.get("availability", False):
                 dm = SendAvailabilityMail(product[1], product[3], db["price"], product[2])
                 dm.send_availability_mail()
-                print(f"✅ Notification sent for {product[3]}")
             else:
-                print("❌ Product not available, skipping...")
+                continue
         
         except Exception as e:
             print(f"Error checking availability: {e}")

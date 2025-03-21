@@ -94,7 +94,7 @@ class DatabaseHandler:
             exists = cursor.fetchone()[0]
             
             # ✅ Debug Logging
-            print(f"[DEBUG] Checking availability existence for Email: {email}, Product Link: {product_link} → Exists: {exists}")
+            # print(f"[DEBUG] Checking availability existence for Email: {email}, Product Link: {product_link} → Exists: {exists}")
             
             return exists
 
@@ -107,7 +107,7 @@ class DatabaseHandler:
             exists = cursor.fetchone()[0]
 
             # ✅ Debug Logging
-            print(f"[DEBUG] Checking price existence for Email: {email}, Product Link: {product_link} → Exists: {exists}")
+            # print(f"[DEBUG] Checking price existence for Email: {email}, Product Link: {product_link} → Exists: {exists}")
             
             return exists
 

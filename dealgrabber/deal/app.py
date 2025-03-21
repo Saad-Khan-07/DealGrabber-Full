@@ -3,7 +3,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
-from dealgrabber.deal.driver_utils import get_chrome_driver
+from dealgrabber.deal.driver_utils import get_driver,return_driver_to_pool
 
 class ProductInfo:
     def __init__(self):
@@ -11,7 +11,7 @@ class ProductInfo:
         self.price = None
         self.link = None
         self.shoesize = 0
-        self.driver = get_chrome_driver()
+        self.driver = get_driver()
 
     def search_product(self, productname):
         self.productname = productname
@@ -61,4 +61,4 @@ class ProductInfo:
         return top_results
 
     def close_driver(self):
-        self.driver.quit()
+        return_driver_to_pool(self.driver)

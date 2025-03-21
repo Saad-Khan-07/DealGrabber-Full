@@ -16,9 +16,8 @@ def check_price_deal():
             if int(db["current_price"]) <= int(product[4]):  # Compare correctly
                 dm = DealNotiyMail(product[1], product[3], product[4], product[2])
                 dm.send_deal_mail()
-                print(f"✅ Deal email sent for {product[3]}")
             else:
-                print("❌ No deal available, skipping...")
+                continue
 
         except Exception as e:
             print(f"Error checking price: {e}")

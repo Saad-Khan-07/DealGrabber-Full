@@ -2,13 +2,13 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
-from dealgrabber.deal.driver_utils import get_chrome_driver
+from dealgrabber.deal.driver_utils import get_driver,return_driver_to_pool
 
 class CheckAvailability:
     def __init__(self, link, shoesize=0):
         self.link = link
         self.shoesize = shoesize
-        self.driver = get_chrome_driver()
+        self.driver = get_driver()
         self.available = False
 
     def check_availability(self):
@@ -55,4 +55,4 @@ class CheckAvailability:
             return False
 
     def close_driver(self):
-        self.driver.quit()
+        return_driver_to_pool(self.driver)

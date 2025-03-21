@@ -25,7 +25,6 @@ def search_product_route():
         product_name = request.form.get("product_name", "").strip()
         email = request.form.get("email", "").strip()
         session["email"] = email
-
         try:
             result_list = search_product_run(product_name)
             if result_list:
@@ -108,7 +107,6 @@ def add_price():
 
         if db_handler.check_price_exists(email, product_link):
             return render_template("error.html", error="You already have a price request for this product.")
-
         try:
             # Let check_price handle the database operation
             dataset = check_price(product_link, shoesize, target_price, email)
