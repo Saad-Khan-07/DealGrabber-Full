@@ -5,272 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Select Product - DealGrabber</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        :root {
-            --dark-bg: #121212;
-            --card-bg: #1E1E1E;
-            --accent-color: #8C52FF;
-            --text-primary: #E0E0E0;
-            --text-secondary: #A0A0A0;
-            --border-color: #333333;
-        }
-        
-        body {
-            background-color: var(--dark-bg);
-            color: var(--text-primary);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            padding-bottom: 2rem;
-        }
-        
-        .premium-card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            overflow: hidden;
-            margin-bottom: 2rem;
-        }
-        
-        .card-header {
-            background: linear-gradient(135deg, var(--accent-color), #6029CC);
-            border-bottom: none;
-            padding: 1.5rem;
-        }
-        
-        .card-header h2 {
-            margin: 0;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            display: flex;
-            align-items: center;
-        }
-        
-        .card-header h2 i {
-            margin-right: 10px;
-        }
-        
-        .card-body {
-            padding: 2rem;
-        }
-        
-        .product-card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            height: 100%;
-        }
-        
-        .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-            border-color: var(--accent-color);
-        }
-        
-        .product-image-container {
-            height: 200px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: rgba(255, 255, 255, 0.05);
-            padding: 1rem;
-        }
-        
-        .product-image {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-        }
-        
-        .product-details {
-            padding: 1.5rem;
-        }
-        
-        .product-title {
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 0.75rem;
-            color: var(--text-primary);
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            height: 2.75rem;
-        }
-        
-        .product-price {
-            color: #2AC769;
-            font-size: 1.25rem;
-            font-weight: 700;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, var(--accent-color), #6029CC);
-            border: none;
-            border-radius: 8px;
-            padding: 12px 24px;
-            font-weight: 500;
-            letter-spacing: 0.5px;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-primary:hover {
-            background: linear-gradient(135deg, #9A6AFF, #7038E0);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(140, 82, 255, 0.4);
-        }
-        
-        .btn-secondary {
-            background-color: transparent;
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
-            border-radius: 8px;
-            padding: 12px 24px;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-secondary:hover {
-            background-color: rgba(255, 255, 255, 0.05);
-            border-color: var(--text-secondary);
-            color: var(--text-primary);
-        }
-        
-        .btn-warning {
-            background: linear-gradient(135deg, #FF9F00, #D98200);
-            border: none;
-            border-radius: 8px;
-            padding: 12px 24px;
-            font-weight: 500;
-            letter-spacing: 0.5px;
-            transition: all 0.3s ease;
-            color: #212529;
-        }
-        
-        .btn-warning:hover {
-            background: linear-gradient(135deg, #FFB233, #E99000);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 159, 0, 0.4);
-            color: #212529;
-        }
-        
-        .page-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 3rem 1rem;
-        }
-        
-        .products-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-        
-        .action-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 1rem;
-        }
-        
-        .btn-action {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .btn-action i {
-            margin-right: 8px;
-        }
-        
-        .dropdown-menu {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-            padding: 0.5rem;
-            display: none;
-        }
-        
-        .dropdown-menu.show {
-            display: block;
-        }
-        
-        .dropdown-item {
-            color: var(--text-primary);
-            padding: 0.75rem 1rem;
-            border-radius: 6px;
-            transition: all 0.2s ease;
-        }
-        
-        .dropdown-item:hover {
-            background-color: rgba(255, 255, 255, 0.05);
-            color: var(--accent-color);
-        }
-        
-        .dropdown-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-    </style>
-</head>
-<body>
-    <div class="page-container">
-        <div class="premium-card">
-            <div class="card-header">
-                <h2>
-                    <i class="fas fa-list"></i>
-                    Select Your Product
-                </h2>
-                <p class="mb-0 mt-2 text-light-50">Choose from the options below or set your own link</p>
-            </div>
-            
-            <div class="card-body">
-                <div class="products-grid">
-                    {% for product in result_list[:4] %}
-                    <a href="{{ url_for('select_link', selected_link=product.link) }}" class="text-decoration-none">
-                        <div class="product-card">
-                            <div class="product-image-container">
-                                <img src="{{ product.image_link }}" class="product-image" alt="{{ product.title }}">
-                            </div>
-                            <div class="product-details">
-                                <h5 class="product-title">{{ product.title }}</h5>
-                                <p class="product-price">{{ product.price }}</p>
-                            </div>
-                        </div>
-                    </a>
-                    {% endfor %}
-                </div>
-            </div>
-            
-            <div class="card-footer">
-                <div class="action-buttons">
-                    <a href="{{ url_for('search_product_route') }}" class="btn btn-secondary btn-action">
-                        <i class="fas fa-arrow-left"></i> Back to Search
-                    </a>
-                    
-                    <div class="btn-group">
-                        <button class="btn btn-warning dropdown-btn" onclick="showDropdown()">
-                            <i class="fas fa-link"></i> Set Link Myself <i class="fas fa-caret-down ms-1"></i>
-                        </button>
-                        <div id="customLinkDropdown" class="dropdown-menu">
-                            <a class="dropdown-item" href="{{ url_for('add_availability') }}">
-                                <i class="fas fa-bell me-2"></i> Set Availability Notification
-                            </a>
-                            <a class="dropdown-item" href="{{ url_for('add_price') }}">
-                                <i class="fas fa-tags me-2"></i> Set Price Notification
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script>
         function showDropdown() {
             document.getElementById("customLinkDropdown").classList.toggle("show");
@@ -278,7 +12,7 @@
 
         // Close dropdown if clicked outside
         window.onclick = function(event) {
-            if (!event.target.matches('.dropdown-btn') && !event.target.parentElement.matches('.dropdown-btn')) {
+            if (!event.target.matches('.dropdown-btn')) {
                 var dropdowns = document.getElementsByClassName("dropdown-menu");
                 for (var i = 0; i < dropdowns.length; i++) {
                     var openDropdown = dropdowns[i];
@@ -289,5 +23,45 @@
             }
         }
     </script>
+    <style>
+        .dropdown-menu.show { display: block; }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center mb-4">Select Your Product</h2>
+        
+        <!-- Back to Search & Set Link Myself -->
+
+        <div class="row">
+            {% for product in result_list[:4] %}
+            <div class="col-md-3">
+                <div class="card" style="width: 18rem; height: 370px;">
+                    <a href="{{ url_for('select_link', selected_link=product.link) }}" class="text-decoration-none">
+                        <div class="image-container" style="height: 200px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                            <img src="{{ product.image_link }}" class="card-img" alt="{{ product.title }}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                        </div>
+                        <div class="card-body text-center">
+                            <h5 class="card-title">{{ product.title }}</h5>
+                            <p class="card-text text-success fw-bold">{{ product.price }}</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center mb-4">
+            <a href="{{ url_for('search_product_route') }}" class="btn btn-secondary">🔍 Go Back to Search</a>
+            
+            <!-- Dropdown for Set Link Myself -->
+            <div class="btn-group">
+                <button class="btn btn-warning dropdown-btn" onclick="showDropdown()">📝 Set Link Myself ▼</button>
+                <div id="customLinkDropdown" class="dropdown-menu">
+                    <a class="dropdown-item" href="{{ url_for('add_availability') }}">📩 Set Availability Notification</a>
+                    <a class="dropdown-item" href="{{ url_for('add_price') }}">💰 Set Price Notification</a>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
