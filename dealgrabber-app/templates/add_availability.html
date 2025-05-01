@@ -5,39 +5,61 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Set Up Availability Notification - DealGrabber</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="common.css">
 </head>
 <body>
-    <div class="container mt-5">
-        <div class="card">
-            <div class="card-header bg-primary text-white">
-                <h2>Set Up Availability Notification</h2>
+    <div class="page-container">
+        <div class="premium-card fade-in">
+            <div class="card-header card-header-primary">
+                <h2>
+                    <i class="fas fa-bell"></i>
+                    Set Up Availability Alert
+                </h2>
+                <p class="mb-0 mt-2">We'll notify you when your product becomes available</p>
             </div>
             <div class="card-body">
                 <form method="POST" action="/add-availability">
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Email address</label>
-                        <input type="email" class="form-control" id="email" name="email" value="{{ email }}" required>
+                    <div class="floating-input">
+                        <input type="email" class="form-control" id="email" name="email" value="{{ email }}" placeholder=" " required>
+                        <label for="email">Email address</label>
+                        <div class="input-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
                         <div class="form-text">We'll send notifications to this email.</div>
                     </div>
                     
-                    <div class="mb-3">
-                        <label for="product_link" class="form-label">Product Link</label>
-                        <input placeholder="provide the link of the specific product" type="url" class="form-control" id="product_link" name="product_link" value="{{ product_link }}" required>
+                    <div class="floating-input">
+                        <input type="url" class="form-control" id="product_link" name="product_link" value="{{ product_link }}" placeholder=" " required>
+                        <label for="product_link">Product Link</label>
+                        <div class="input-icon">
+                            <i class="fas fa-link"></i>
+                        </div>
+                        <div class="form-text">Provide the link of the specific product you want to track</div>
                     </div>
                     
-                    <div class="mb-3">
-                        <label for="shoesize" class="form-label">Shoe Size (UK) (Optional)</label>
-                        <input type="number" class="form-control" id="shoesize" name="shoesize" value="{{ shoesize }}">
+                    <div class="floating-input">
+                        <input type="number" class="form-control" id="shoesize" name="shoesize" value="{{ shoesize }}" placeholder=" ">
+                        <label for="shoesize">Shoe Size (UK) (Optional)</label>
+                        <div class="input-icon">
+                            <i class="fas fa-shoe-prints"></i>
+                        </div>
                         <div class="form-text">Leave empty if not applicable.</div>
                     </div>
                     
-                    <button type="submit" class="btn btn-success">Set Up Notification</button>
+                    <button type="submit" class="btn btn-success w-100 mt-4">
+                        <i class="fas fa-bell"></i> Set Up Notification
+                    </button>
                 </form>
             </div>
             <div class="card-footer">
-                <a href="/" class="btn btn-secondary">Return to Home</a>
+                <a href="/" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Return to Home
+                </a>
             </div>
         </div>
     </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
