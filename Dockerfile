@@ -24,6 +24,7 @@ RUN apt-get update && apt-get install -y \
 
 # Set environment variables
 ENV CHROME_BIN=/usr/bin/chromium
+ENV CHROMEDRIVER_PATH=/usr/bin/chromedriver
 ENV PYTHONUNBUFFERED=1
 
 # Set working directory
@@ -35,8 +36,11 @@ COPY . .
 # Upgrade pip safely
 RUN pip install --upgrade pip
 
-# Install dependencies (excluding WebDriver Manager)
+# Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
+
+# Verify Chrome and ChromeDriver installation
+RUN which chromium && which chromedriver
 
 # Expose Railway-assigned port
 EXPOSE $PORT

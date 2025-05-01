@@ -3,6 +3,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 import queue
 import threading
+import os
 
 # Maximum number of WebDriver instances in the pool
 MAX_POOL_SIZE = 3
@@ -18,8 +19,11 @@ def create_driver():
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--window-size=1920,1080")
     chrome_options.add_argument("--blink-settings=imagesEnabled=false")  # Disable image loading for faster scraping
-
-    service = Service("/usr/bin/chromedriver")  # Use system-installed ChromeDriver
+    
+    # Get the ChromeDriver path from environment variable or use the default system path
+    chromedriver_path = os.environ.get("CHROMEDRIVER_PATH", "/usr/bin/chromedriver")
+    
+    service = Service(chromedriver_path)
     driver = webdriver.Chrome(service=service, options=chrome_options)
     
     return driver
