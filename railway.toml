@@ -3,13 +3,9 @@ name = "dealgrabber"
 startCommand = "gunicorn -w 4 -b 0.0.0.0:$PORT dealgrabberflask.app:app"
 
 [cron]
-
-# Run check_available.py at 12 AM, 6 AM, 12 PM, and 6 PM daily
 [[jobs]]
 schedule = "0 0,6,12,18 * * *"
 command = "python dealgrabber/deal/check_available.py"
-
-# Run check_price.py at 12 AM, 6 AM, 12 PM, and 6 PM daily
 [[jobs]]
 schedule = "0 0,6,12,18 * * *"
 command = "python dealgrabber/deal/check_price.py"

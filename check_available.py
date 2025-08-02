@@ -1,4 +1,4 @@
-from db import DatabaseHandler
+from dealgrabber.deal.db import DatabaseHandler
 from dealgrabber.deal.avaliablility_handler import CheckAvailability
 from dealgrabber.deal.mail_notification import SendAvailabilityMail
 

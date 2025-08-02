@@ -1,6 +1,5 @@
 FROM python:3.10-slim
 
-# Install dependencies for Chrome
 RUN apt-get update && apt-get install -y \
     wget \
     gnupg \
@@ -22,28 +21,20 @@ RUN apt-get update && apt-get install -y \
     chromium \
     chromium-driver
 
-# Set environment variables
 ENV CHROME_BIN=/usr/bin/chromium
 ENV CHROMEDRIVER_PATH=/usr/bin/chromedriver
 ENV PYTHONUNBUFFERED=1
 
-# Set working directory
 WORKDIR /app
 
-# Copy application files
 COPY . .
 
-# Upgrade pip safely
 RUN pip install --upgrade pip
 
-# Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Verify Chrome and ChromeDriver installation
 RUN which chromium && which chromedriver
 
-# Expose Railway-assigned port
 EXPOSE $PORT
 
-# Run the application
 CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:$PORT", "dealgrabberflask.app:app"]

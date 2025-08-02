@@ -1,4 +1,4 @@
-from db import DatabaseHandler
+from dealgrabber.deal.db import DatabaseHandler
 from dealgrabber.deal.price_handler import HandlePrice
 from dealgrabber.deal.mail_notification import DealNotiyMail
 
