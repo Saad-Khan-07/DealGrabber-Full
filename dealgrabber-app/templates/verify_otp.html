@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Verification - DealGrabber</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        .otp-container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .otp-input {
+            font-size: 1.5rem;
+            text-align: center;
+            letter-spacing: 0.5rem;
+            font-weight: bold;
+        }
+        .email-display {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            word-break: break-all;
+        }
+        .security-note {
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+        .countdown-timer {
+            font-weight: bold;
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="otp-container">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-dark text-center">
+                    <h3><i class="bi bi-shield-lock"></i> Email Verification</h3>
+                </div>
+                <div class="card-body">
+                    <!-- Success Message -->
+                    {% if success %}
+                    <div class="alert alert-success" role="alert">
+                        <i class="bi bi-check-circle"></i> {{ success }}
+                    </div>
+                    {% endif %}
+
+                    <!-- Error Message -->
+                    {% if error %}
+                    <div class="alert alert-danger" role="alert">
+                        <i class="bi bi-exclamation-triangle"></i> {{ error }}
+                    </div>
+                    {% endif %}
+
+                    <div class="text-center mb-4">
+                        <h5>Enter the OTP sent to:</h5>
+                        <div class="email-display">{{ email }}</div>
+                        <p class="security-note mt-2">
+                            <i class="bi bi-info-circle"></i> We've sent a 6-digit verification code to verify your identity.
+                        </p>
+                    </div>
+
+                    <!-- OTP Form -->
+                    <form method="POST" action="{{ url_for('verify_otp') }}">
+                        <div class="mb-4">
+                            <label for="otp" class="form-label text-center w-100">
+                                <strong>Verification Code</strong>
+                            </label>
+                            <input 
+                                type="text" 
+                                class="form-control otp-input" 
+                                id="otp" 
+                                name="otp" 
+                                maxlength="6" 
+                                placeholder="000000"
+                                pattern="[0-9]{6}"
+                                title="Please enter a 6-digit number"
+                                required
+                                autocomplete="off"
+                            >
+                            <div class="form-text text-center">
+                                Code expires in <span class="countdown-timer">10 minutes</span>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-check2-circle"></i> Verify & Continue
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Resend OTP Section -->
+                    <div class="text-center mt-4 pt-3 border-top">
+                        <p class="mb-2">Didn't receive the code?</p>
+                        <form method="POST" action="{{ url_for('resend_otp') }}" style="display: inline;">
+                            <button type="submit" class="btn btn-outline-secondary btn-sm">
+                                <i class="bi bi-arrow-clockwise"></i> Resend OTP
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Security Notice -->
+                    <div class="alert alert-light mt-4" role="alert">
+                        <small class="security-note">
+                            <i class="bi bi-shield-check"></i> 
+                            <strong>Security Notice:</strong> This verification ensures only you can access your notifications. 
+                            Never share this code with anyone.
+                        </small>
+                    </div>
+                </div>
+
+                <div class="card-footer text-center">
+                    <a href="{{ url_for('delete_product') }}" class="btn btn-link">
+                        <i class="bi bi-arrow-left"></i> Back to Email Entry
+                    </a>
+                    <span class="mx-2">|</span>
+                    <a href="{{ url_for('home') }}" class="btn btn-link">
+                        <i class="bi bi-house"></i> Return to Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auto-focus on OTP input -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const otpInput = document.getElementById('otp');
+            otpInput.focus();
+            
+            // Auto-format OTP input (only allow numbers)
+            otpInput.addEventListener('input', function(e) {
+                e.target.value = e.target.value.replace(/[^0-9]/g, '');
+            });
+            
+            // Auto-submit when 6 digits are entered
+            otpInput.addEventListener('input', function(e) {
+                if (e.target.value.length === 6) {
+                    // Small delay to show the complete number to user
+                    setTimeout(() => {
+                        e.target.form.submit();
+                    }, 500);
+                }
+            });
+        });
+    </script>
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+</body>
+</html>

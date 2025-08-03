@@ -77,7 +77,32 @@ class ConfirmationMail:
     def send_confirmation(self):
         subject = "DealGrabber - Confirmation Mail"
         body = """
-            Hello there, this mail is to inform you that your request to get notifications on deals is submitted.
+            Hello there, this mall is to inform you that your request to get notifications on deals is submitted.
             Thank you for considering DealGrabber!
+        """
+        self.smtp_client.send_email(self.receiver, subject, body)
+
+# ✅ NEW CLASS - OTP Email
+class OTPMail:
+    def __init__(self, smtp_client, receiver, otp):
+        self.smtp_client = smtp_client
+        self.receiver = receiver
+        self.otp = otp
+
+    def send_otp_mail(self):
+        subject = "DealGrabber - Email Verification Code"
+        body = f"""
+            Hello,
+            
+            You requested to view your DealGrabber notifications.
+            
+            Your verification code is: {self.otp}
+            
+            This code will expire in 10 minutes for security reasons.
+            
+            If you did not request this code, please ignore this email.
+            
+            Best regards,
+            DealGrabber Team
         """
         self.smtp_client.send_email(self.receiver, subject, body)
