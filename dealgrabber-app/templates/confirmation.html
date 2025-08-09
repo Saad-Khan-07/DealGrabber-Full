@@ -1,22 +1,194 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Confirmation - DealGrabber</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kite+One&display=swap" rel="stylesheet">
+    <style>
+        .font-kite { font-family: 'Kite One', cursive; }
+        .bg-charcoal { background-color: #1E1E1E; }
+        .text-off-white { color: #FBFBFB; }
+        .text-vermilion { color: #E34234; }
+        .bg-vermilion { background-color: #E34234; }
+        .border-vermilion { border-color: #E34234; }
+        
+        .success-pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.05); }
+        }
+        
+        .floating-cart {
+            position: absolute;
+            opacity: 0.08;
+            animation: float 8s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(10deg); }
+        }
+        
+        .cart-1 { top: 15%; left: 10%; animation-delay: -1s; }
+        .cart-2 { top: 25%; right: 15%; animation-delay: -4s; }
+        .cart-3 { bottom: 25%; left: 20%; animation-delay: -2s; }
+        .cart-4 { bottom: 20%; right: 10%; animation-delay: -5s; }
+        .cart-5 { top: 60%; left: 5%; animation-delay: -3s; }
+        
+        .card-hover {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px rgba(34, 197, 94, 0.15);
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(227, 66, 52, 0.05) 100%);
+        }
+    </style>
 </head>
-<body>
-    <div class="container mt-5">
-        <div class="card">
-            <div class="card-header bg-success text-white">
-                <h2>Success!</h2>
+<body class="bg-charcoal text-off-white min-h-screen relative overflow-hidden">
+    <!-- Floating Cart Background -->
+    <div class="floating-cart cart-1">
+        <svg width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="1">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="m1 1 4 4 2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+    </div>
+    <div class="floating-cart cart-2">
+        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="1">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="m1 1 4 4 2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+    </div>
+    <div class="floating-cart cart-3">
+        <svg width="90" height="90" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="1">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="m1 1 4 4 2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+    </div>
+    <div class="floating-cart cart-4">
+        <svg width="70" height="70" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="1">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="m1 1 4 4 2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+    </div>
+    <div class="floating-cart cart-5">
+        <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="1">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="m1 1 4 4 2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="relative z-20 py-6">
+    <div class="max-w-7xl mx-auto px-4 flex items-center justify-between">
+        <div class="font-kite text-2xl text-red-500">DEALGRABBER</div>
+        <div class="hidden md:flex space-x-8">
+            <a href="/search-product" class="text-gray-300 hover:text-white transition-colors">Search</a>
+            <a href="/add-availability" class="text-gray-300 hover:text-white transition-colors">Set Availability</a>
+            <a href="/add-price" class="text-gray-300 hover:text-white transition-colors">Set Price</a>
+            <a href="/delete-product" class="text-gray-300 hover:text-white transition-colors">Delete Notifications</a>
+        </div>
+        <div class="md:hidden">
+            <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+        </div>
+    </div>
+</nav>
+
+    <!-- Main Content -->
+    <div class="relative z-10 flex items-center justify-center min-h-screen px-4 py-8">
+        <div class="w-full max-w-2xl text-center">
+            <!-- Success Animation -->
+            <div class="mb-8">
+                <div class="inline-flex items-center justify-center w-24 h-24 bg-green-500 rounded-full success-pulse mb-6">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22,4 12,14.01 9,11.01"></polyline>
+                    </svg>
+                </div>
+                <h1 class="font-kite text-4xl text-off-white mb-4">Success!</h1>
+                <div class="w-24 h-1 bg-green-500 mx-auto rounded-full mb-6"></div>
             </div>
-            <div class="card-body">
-                <p class="card-text">{{ message }}</p>
-                <p>You will receive a confirmation email shortly.</p>
-                <a href="/" class="btn btn-primary">Return to Home</a>
+
+            <!-- Success Card -->
+            <div class="bg-gray-800 bg-opacity-50 backdrop-blur-sm rounded-2xl p-8 card-hover border border-gray-700 gradient-bg mb-8">
+                <div class="space-y-4">
+                    <p class="text-xl text-off-white leading-relaxed">{{ message }}</p>
+                    <div class="flex items-center justify-center space-x-2 text-gray-400">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                            <polyline points="22,6 12,13 2,6"></polyline>
+                        </svg>
+                        <span>You will receive a confirmation email shortly</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="space-y-4">
+                <a href="/" class="inline-flex items-center justify-center bg-vermilion hover:bg-red-600 text-white font-medium py-3 px-8 rounded-xl transition-all duration-200 transform hover:scale-105 hover:shadow-lg">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mr-2">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9,22 9,12 15,12 15,22"></polyline>
+                    </svg>
+                    Return to Home
+                </a>
+                
+                <div class="flex flex-col sm:flex-row gap-4 justify-center mt-6">
+                    <a href="/search" class="inline-flex items-center justify-center bg-gray-700 hover:bg-gray-600 text-off-white font-medium py-2 px-6 rounded-lg transition-all duration-200">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mr-2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                        Set Up Another Alert
+                    </a>
+                    
+                    <a href="/delete" class="inline-flex items-center justify-center bg-gray-700 hover:bg-gray-600 text-off-white font-medium py-2 px-6 rounded-lg transition-all duration-200">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mr-2">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>
+                        </svg>
+                        Manage Notifications
+                    </a>
+                </div>
+            </div>
+
+            <!-- Additional Info -->
+            <div class="mt-12 p-6 bg-gray-800 bg-opacity-30 rounded-xl border border-gray-700">
+                <h3 class="text-lg font-medium text-off-white mb-3">What's Next?</h3>
+                <div class="grid md:grid-cols-3 gap-4 text-sm text-gray-400">
+                    <div class="flex items-start space-x-2">
+                        <div class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <span class="text-white text-xs font-bold">1</span>
+                        </div>
+                        <span>We'll monitor the product continuously</span>
+                    </div>
+                    <div class="flex items-start space-x-2">
+                        <div class="w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <span class="text-white text-xs font-bold">2</span>
+                        </div>
+                        <span>Get instant email alerts when conditions are met</span>
+                    </div>
+                    <div class="flex items-start space-x-2">
+                        <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <span class="text-white text-xs font-bold">3</span>
+                        </div>
+                        <span>Never miss a deal again!</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

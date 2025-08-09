@@ -4,28 +4,246 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Info - DealGrabber</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kite+One&display=swap" rel="stylesheet">
+    <style>
+        .font-kite { font-family: 'Kite One', cursive; }
+        .bg-charcoal { background-color: #1E1E1E; }
+        .text-off-white { color: #FBFBFB; }
+        .text-vermilion { color: #E34234; }
+        .bg-vermilion { background-color: #E34234; }
+        .border-vermilion { border-color: #E34234; }
+        
+        .floating-cart {
+            position: absolute;
+            opacity: 0.1;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+        
+        .cart-1 { top: 10%; left: 10%; animation-delay: -1s; }
+        .cart-2 { top: 20%; right: 15%; animation-delay: -3s; }
+        .cart-3 { bottom: 20%; left: 20%; animation-delay: -2s; }
+        .cart-4 { bottom: 15%; right: 10%; animation-delay: -4s; }
+        
+        .card-hover {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px rgba(227, 66, 52, 0.1);
+        }
+        
+        .product-image {
+            transition: transform 0.3s ease;
+        }
+        .product-image:hover {
+            transform: scale(1.05);
+        }
+        
+        .action-btn {
+            transition: all 0.3s ease;
+        }
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .price-pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+        
+        .gradient-border {
+            background: linear-gradient(135deg, #E34234, #22c55e, #3b82f6);
+            padding: 2px;
+            border-radius: 1rem;
+        }
+        
+        .gradient-border-inner {
+            background: #1f2937;
+            border-radius: 14px;
+        }
+    </style>
 </head>
-<body>
-    <div class="container mt-5">
-        <h2 class="text-center mb-4">Selected Product</h2>
+<body class="bg-charcoal text-off-white min-h-screen relative overflow-hidden">
+    <!-- Floating Cart Background -->
+    <div class="floating-cart cart-1">
+        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#E34234" stroke-width="1">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="m1 1 4 4 2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+    </div>
+    <div class="floating-cart cart-2">
+        <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#E34234" stroke-width="1">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="m1 1 4 4 2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+    </div>
+    <div class="floating-cart cart-3">
+        <svg width="70" height="70" viewBox="0 0 24 24" fill="none" stroke="#E34234" stroke-width="1">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="m1 1 4 4 2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+    </div>
+    <div class="floating-cart cart-4">
+        <svg width="90" height="90" viewBox="0 0 24 24" fill="none" stroke="#E34234" stroke-width="1">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="m1 1 4 4 2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+    </div>
 
-        <div class="card mx-auto" style="width: 22rem;">
-            <img src="{{ product.image_link }}" class="card-img-top" alt="{{ product.title }}">
-            <div class="card-body text-center">
-                <h5 class="card-title">{{ product.title }}</h5>
-                <p class="card-text text-success fw-bold">{{ product.price }}</p>
-                <a href="{{ product.link }}" target="_blank" class="btn btn-info">🔗 View on Flipkart</a>
+    <!-- Navigation -->
+    <nav class="relative z-20 py-6">
+    <div class="max-w-7xl mx-auto px-4 flex items-center justify-between">
+        <div class="font-kite text-2xl text-red-500">DEALGRABBER</div>
+        <div class="hidden md:flex space-x-8">
+            <a href="/search-product" class="text-gray-300 hover:text-white transition-colors">Search</a>
+            <a href="/add-availability" class="text-gray-300 hover:text-white transition-colors">Set Availability</a>
+            <a href="/add-price" class="text-gray-300 hover:text-white transition-colors">Set Price</a>
+            <a href="/delete-product" class="text-gray-300 hover:text-white transition-colors">Delete Notifications</a>
+        </div>
+        <div class="md:hidden">
+            <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+        </div>
+    </div>
+</nav>
+
+    <!-- Main Content -->
+    <div class="relative z-10 px-4 py-8">
+        <div class="max-w-4xl mx-auto">
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <h1 class="font-kite text-3xl text-off-white mb-2">Selected Product</h1>
+                <div class="w-24 h-1 bg-vermilion mx-auto rounded-full"></div>
             </div>
-        </div>
 
-        <div class="text-center mt-4">
-            <a href="{{ url_for('add_availability') }}" class="btn btn-primary">🔔 Set Availability Notification</a>
-            <a href="{{ url_for('add_price') }}" class="btn btn-success">💰 Set Price Notification</a>
-        </div>
+            <!-- Product Card -->
+            <div class="max-w-md mx-auto mb-8">
+                <div class="gradient-border">
+                    <div class="gradient-border-inner card-hover">
+                        <!-- Product Image -->
+                        <div class="relative overflow-hidden rounded-t-xl">
+                            <img 
+                                src="{{ product.image_link }}" 
+                                class="w-full h-72 object-cover product-image" 
+                                alt="{{ product.title }}"
+                                onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNmI3MjgwIiBzdHJva2Utd2lkdGg9IjIiPjxyZWN0IHg9IjMiIHk9IjMiIHdpZHRoPSIxOCIgaGVpZ2h0PSIxOCIgcng9IjIiIHJ5PSIyIi8+PGNpcmNsZSBjeD0iOC41IiBjeT0iOC41IiByPSIxLjUiLz48cG9seWxpbmUgcG9pbnRzPSI5LDIxIDIxLDkgMTMsOSIvPjwvc3ZnPg=='"
+                            >
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                        </div>
+                        
+                        <!-- Product Details -->
+                        <div class="p-6 text-center">
+                            <h2 class="text-xl font-medium text-off-white mb-4 line-clamp-2">{{ product.title }}</h2>
+                            <div class="mb-6">
+                                <p class="text-3xl font-bold text-vermilion price-pulse">{{ product.price }}</p>
+                                <p class="text-sm text-gray-400 mt-1">Current price on Flipkart</p>
+                            </div>
+                            
+                            <!-- View Product Button -->
+                            <a 
+                                href="{{ product.link }}" 
+                                target="_blank" 
+                                class="inline-flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-105 hover:shadow-lg w-full mb-4"
+                            >
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mr-2">
+                                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                                    <polyline points="15,3 21,3 21,9"></polyline>
+                                    <line x1="10" y1="14" x2="21" y2="3"></line>
+                                </svg>
+                                View on Flipkart
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-        <div class="text-center mt-3 mb-10">
-            <a href="{{ url_for('select_product_route') }}" class="btn btn-secondary">🔙 Choose Another Product</a>
+            <!-- Action Buttons -->
+            <div class="max-w-lg mx-auto space-y-4 mb-8">
+                <div class="grid md:grid-cols-2 gap-4">
+                    <a 
+                        href="{{ url_for('add_availability') }}" 
+                        class="action-btn bg-blue-500 hover:bg-blue-600 text-white font-medium py-4 px-6 rounded-xl transition-all duration-200 transform hover:scale-105 flex items-center justify-center space-x-3"
+                    >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <path d="M16 10a4 4 0 0 1-8 0"></path>
+                        </svg>
+                        <span>Set Availability Alert</span>
+                    </a>
+                    
+                    <a 
+                        href="{{ url_for('add_price') }}" 
+                        class="action-btn bg-green-500 hover:bg-green-600 text-white font-medium py-4 px-6 rounded-xl transition-all duration-200 transform hover:scale-105 flex items-center justify-center space-x-3"
+                    >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="1" x2="12" y2="23"></line>
+                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                        </svg>
+                        <span>Set Price Alert</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Info Cards -->
+            <div class="grid md:grid-cols-2 gap-6 mb-8">
+                <div class="bg-gray-800 bg-opacity-50 backdrop-blur-sm rounded-xl p-6 border border-gray-700">
+                    <div class="flex items-center mb-3">
+                        <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center mr-3">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                                <line x1="3" y1="6" x2="21" y2="6"></line>
+                                <path d="M16 10a4 4 0 0 1-8 0"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-medium text-off-white">Availability Alerts</h3>
+                    </div>
+                    <p class="text-gray-400 text-sm">Get notified instantly when this product becomes available or goes back in stock.</p>
+                </div>
+                
+                <div class="bg-gray-800 bg-opacity-50 backdrop-blur-sm rounded-xl p-6 border border-gray-700">
+                    <div class="flex items-center mb-3">
+                        <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mr-3">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                                <line x1="12" y1="1" x2="12" y2="23"></line>
+                                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-medium text-off-white">Price Alerts</h3>
+                    </div>
+                    <p class="text-gray-400 text-sm">Set your target price and we'll notify you when the product price drops below that amount.</p>
+                </div>
+            </div>
+
+            <!-- Back Button -->
+            <div class="text-center">
+                <a 
+                    href="{{ url_for('select_product_route') }}" 
+                    class="inline-flex items-center justify-center bg-gray-700 hover:bg-gray-600 text-off-white font-medium py-3 px-6 rounded-xl transition-all duration-200"
+                >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mr-2">
+                        <path d="M19 12H5"></path>
+                        <polyline points="12,19 5,12 12,5"></polyline>
+                    </svg>
+                    Choose Another Product
+                </a>
+            </div>
         </div>
     </div>
 </body>

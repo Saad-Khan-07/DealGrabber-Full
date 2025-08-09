@@ -4,44 +4,196 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Set Up Price Notification - DealGrabber</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kite+One&display=swap" rel="stylesheet">
+    <style>
+        .font-kite { font-family: 'Kite One', cursive; }
+        .bg-charcoal { background-color: #1E1E1E; }
+        .text-off-white { color: #FBFBFB; }
+        .text-vermilion { color: #E34234; }
+        .bg-vermilion { background-color: #E34234; }
+        .border-vermilion { border-color: #E34234; }
+        .hover-vermilion:hover { background-color: #E34234; }
+        .bg-success-green { background-color: #22c55e; }
+        
+        .floating-cart {
+            position: absolute;
+            opacity: 0.1;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+        
+        .cart-1 { top: 10%; left: 10%; animation-delay: -1s; }
+        .cart-2 { top: 20%; right: 15%; animation-delay: -3s; }
+        .cart-3 { bottom: 20%; left: 20%; animation-delay: -2s; }
+        .cart-4 { bottom: 15%; right: 10%; animation-delay: -4s; }
+        
+        .form-glow:focus {
+            box-shadow: 0 0 0 2px #E34234;
+            border-color: #E34234;
+        }
+        
+        .card-hover {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(227, 66, 52, 0.1);
+        }
+    </style>
 </head>
-<body>
-    <div class="container mt-5">
-        <div class="card">
-            <div class="card-header bg-success text-white">
-                <h2>Set Up Price Notification</h2>
+<body class="bg-charcoal text-off-white h-screen overflow-hidden relative">
+    <!-- Floating Cart Background -->
+    <div class="floating-cart cart-1">
+        <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#E34234" stroke-width="1">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="m1 1 4 4 2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+    </div>
+    <div class="floating-cart cart-2">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#E34234" stroke-width="1">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="m1 1 4 4 2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+    </div>
+    <div class="floating-cart cart-3">
+        <svg width="45" height="45" viewBox="0 0 24 24" fill="none" stroke="#E34234" stroke-width="1">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="m1 1 4 4 2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+    </div>
+    <div class="floating-cart cart-4">
+        <svg width="55" height="55" viewBox="0 0 24 24" fill="none" stroke="#E34234" stroke-width="1">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="m1 1 4 4 2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="relative z-20 py-6">
+    <div class="max-w-7xl mx-auto px-4 flex items-center justify-between">
+        <div class="font-kite text-2xl text-red-500">DEALGRABBER</div>
+        <div class="hidden md:flex space-x-8">
+            <a href="/search-product" class="text-gray-300 hover:text-white transition-colors">Search</a>
+            <a href="/add-availability" class="text-gray-300 hover:text-white transition-colors">Set Availability</a>
+            <a href="/add-price" class="text-gray-300 hover:text-white transition-colors">Set Price</a>
+            <a href="/delete-product" class="text-gray-300 hover:text-white transition-colors">Delete Notifications</a>
+        </div>
+        <div class="md:hidden">
+            <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+        </div>
+    </div>
+</nav>
+
+    <!-- Main Content -->
+    <div class="relative z-10 flex items-center justify-center px-4" style="height: calc(100vh - 64px);">
+        <div class="w-full max-w-lg">
+            <!-- Header -->
+            <div class="text-center mb-5">
+                <div class="inline-flex items-center justify-center w-12 h-12 bg-success-green rounded-full mb-3">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                        <path d="M12 2v20M2 12l10-10 10 10"></path>
+                    </svg>
+                </div>
+                <h1 class="font-kite text-2xl text-off-white mb-1">Price Alert Setup</h1>
+                <p class="text-gray-400 text-sm">Get notified when prices drop below your target</p>
             </div>
-            <div class="card-body">
-                <form method="POST" action="/add-price">
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Email address</label>
-                        <input type="email" class="form-control" id="email" name="email" value="{{ email }}" required>
-                        <div class="form-text">We'll send notifications to this email.</div>
+
+            <!-- Form Card -->
+            <div class="bg-gray-800 bg-opacity-50 backdrop-blur-sm rounded-2xl p-6 card-hover border border-gray-700">
+                <form method="POST" action="/add-price" class="space-y-4">
+                    <!-- Email Field -->
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-off-white mb-1">
+                            Email Address
+                        </label>
+                        <input 
+                            type="email" 
+                            class="w-full px-3 py-2.5 bg-gray-900 border border-gray-600 rounded-xl text-off-white placeholder-gray-400 focus:outline-none form-glow transition-all duration-200" 
+                            id="email" 
+                            name="email" 
+                            value="{{ email }}" 
+                            placeholder="your@email.com"
+                            required
+                        >
                     </div>
-                    
-                    <div class="mb-3">
-                        <label for="product_link" class="form-label">Product Link</label>
-                        <input placeholder="provide the link of the specific product"    type="url" class="form-control" id="product_link" name="product_link" value="{{ product_link }}" required>
+
+                    <!-- Product Link Field -->
+                    <div>
+                        <label for="product_link" class="block text-sm font-medium text-off-white mb-1">
+                            Product Link
+                        </label>
+                        <input 
+                            type="url" 
+                            class="w-full px-3 py-2.5 bg-gray-900 border border-gray-600 rounded-xl text-off-white placeholder-gray-400 focus:outline-none form-glow transition-all duration-200" 
+                            id="product_link" 
+                            name="product_link" 
+                            value="{{ product_link }}" 
+                            placeholder="https://www.flipkart.com/product..."
+                            required
+                        >
                     </div>
-                    
-                    <div class="mb-3">
-                        <label for="target_price" class="form-label">Target Price</label>
-                        <input type="number" class="form-control" id="target_price" name="target_price" required>
-                        <div class="form-text">You'll be notified when the price drops below this amount.</div>
+
+                    <!-- Target Price Field -->
+                    <div>
+                        <label for="target_price" class="block text-sm font-medium text-off-white mb-1">
+                            Target Price (₹)
+                        </label>
+                        <input 
+                            type="number" 
+                            class="w-full px-3 py-2.5 bg-gray-900 border border-gray-600 rounded-xl text-off-white placeholder-gray-400 focus:outline-none form-glow transition-all duration-200" 
+                            id="target_price" 
+                            name="target_price" 
+                            placeholder="1000"
+                            min="1"
+                            required
+                        >
+                        <p class="text-xs text-gray-400 mt-1">You'll be notified when price drops below this amount</p>
                     </div>
-                    
-                    <div class="mb-3">
-                        <label for="shoesize" class="form-label">Shoe Size (UK) (Optional)</label>
-                        <input type="number" class="form-control" id="shoesize" name="shoesize" value="{{ shoesize }}">
-                        <div class="form-text">Leave empty if not applicable.</div>
+
+                    <!-- Shoe Size Field -->
+                    <div>
+                        <label for="shoesize" class="block text-sm font-medium text-off-white mb-1">
+                            Shoe Size (UK) 
+                            <span class="text-gray-400 text-xs">(Optional)</span>
+                        </label>
+                        <input 
+                            type="number" 
+                            class="w-full px-3 py-2.5 bg-gray-900 border border-gray-600 rounded-xl text-off-white placeholder-gray-400 focus:outline-none form-glow transition-all duration-200" 
+                            id="shoesize" 
+                            name="shoesize" 
+                            value="{{ shoesize }}"
+                            placeholder="8"
+                            min="1"
+                            max="15"
+                        >
                     </div>
-                    
-                    <button type="submit" class="btn btn-success">Set Up Notification</button>
+
+                    <!-- Submit Button -->
+                    <button 
+                        type="submit" 
+                        class="w-full bg-success-green hover:bg-green-600 text-white font-medium py-2.5 px-6 rounded-xl transition-all duration-200 transform hover:scale-[1.02] hover:shadow-lg"
+                    >
+                        Set Up Price Notification
+                    </button>
                 </form>
-            </div>
-            <div class="card-footer">
-                <a href="/" class="btn btn-secondary">Return to Home</a>
+
+                <!-- Footer Actions -->
+                <div class="mt-4 pt-4 border-t border-gray-700 text-center">
+                    <a href="/" class="text-gray-400 hover:text-off-white transition-colors text-sm">
+                        ← Return to Home
+                    </a>
+                </div>
             </div>
         </div>
     </div>
