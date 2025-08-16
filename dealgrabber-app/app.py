@@ -235,7 +235,7 @@ def verify_otp():
         if is_valid:
             # ✅ Set verified_email BEFORE removing pending_email
             session["verified_email"] = email
-            # session.pop("pending_email", None)  # Clean up
+            session.pop("pending_email", None)  # Clean up
             print(f"✅ OTP verified successfully. Set verified_email: {email}")  # DEBUG
             return redirect(url_for("delete_list"))
         else:
