@@ -74,7 +74,7 @@
     <!-- Main Content -->
     <div class="relative z-10 w-full max-w-md mx-4">
         <div class="bg-gray-800 bg-opacity-90 backdrop-blur-sm rounded-2xl p-8 border border-gray-700 success-animation">
-            <!-- Success Icon -->
+            <!-- Success/Error Icon -->
             <div class="text-center mb-6">
                 {% if success %}
                 <div class="inline-flex items-center justify-center w-20 h-20 bg-green-500 rounded-full mb-4">
@@ -99,9 +99,8 @@
 
             <!-- Action Buttons -->
             <div class="space-y-4">
-                {% if email %}
                 <!-- Delete More Notifications -->
-                <a href="{{ url_for('delete_product', email=email) }}" 
+                <a href="{{ url_for('delete_product') }}" 
                    class="w-full bg-vermilion hover:bg-red-600 text-white font-medium py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-[1.02] hover:shadow-lg flex items-center justify-center space-x-2">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M3 6h18l-2 13H5L3 6z"></path>
@@ -111,7 +110,6 @@
                     </svg>
                     <span>Delete More Notifications</span>
                 </a>
-                {% endif %}
 
                 <!-- Home Button -->
                 <a href="{{ url_for('home') }}" 
@@ -141,8 +139,8 @@
     <!-- Auto-redirect script (optional) -->
     {% if success %}
     <script>
-        // Auto-redirect to home after 5 seconds for success
-        let countdown = 5;
+        // Auto-redirect to home after 8 seconds for success
+        let countdown = 8;
         const countdownElement = document.createElement('p');
         countdownElement.className = 'text-xs text-gray-400 mt-4 text-center';
         countdownElement.innerHTML = `Redirecting to home in <span class="text-vermilion font-semibold">${countdown}</span> seconds...`;

@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Notifications - DealGrabber</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kite+One&display=swap" rel="stylesheet">
+    <style>
+        .font-kite { font-family: 'Kite One', cursive; }
+        .bg-charcoal { background-color: #1E1E1E; }
+        .text-off-white { color: #FBFBFB; }
+        .text-vermilion { color: #E34234; }
+        .bg-vermilion { background-color: #E34234; }
+        .border-vermilion { border-color: #E34234; }
+        
+        .floating-cart {
+            position: fixed;
+            opacity: 0.1;
+            animation: float 6s ease-in-out infinite;
+            z-index: 1;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+        
+        .cart-1 { top: 10%; left: 10%; animation-delay: -1s; }
+        .cart-2 { top: 20%; right: 15%; animation-delay: -3s; }
+        .cart-3 { bottom: 20%; left: 20%; animation-delay: -2s; }
+        .cart-4 { bottom: 15%; right: 10%; animation-delay: -4s; }
+        
+        .notification-item {
+            transition: all 0.3s ease;
+        }
+        .notification-item:hover {
+            background-color: rgba(75, 85, 99, 0.5);
+            transform: translateX(8px);
+        }
+        
+        .delete-btn {
+            transition: all 0.2s ease;
+        }
+        .delete-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-charcoal text-off-white min-h-screen relative">
+    <!-- Floating Cart Background -->
+    <div class="floating-cart cart-1">
+        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#E34234" stroke-width="1">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="m1 1 4 4 2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+    </div>
+    <div class="floating-cart cart-2">
+        <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#E34234" stroke-width="1">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="m1 1 4 4 2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+    </div>
+    <div class="floating-cart cart-3">
+        <svg width="70" height="70" viewBox="0 0 24 24" fill="none" stroke="#E34234" stroke-width="1">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="m1 1 4 4 2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+    </div>
+    <div class="floating-cart cart-4">
+        <svg width="90" height="90" viewBox="0 0 24 24" fill="none" stroke="#E34234" stroke-width="1">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="m1 1 4 4 2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="relative z-20 py-6">
+        <div class="max-w-7xl mx-auto px-4 flex items-center justify-between">
+            <div class="font-kite text-2xl text-red-500">DEALGRABBER</div>
+            <div class="hidden md:flex space-x-8">
+                <a href="/search-product" class="text-gray-300 hover:text-white transition-colors">Search</a>
+                <a href="/add-availability" class="text-gray-300 hover:text-white transition-colors">Set Availability</a>
+                <a href="/add-price" class="text-gray-300 hover:text-white transition-colors">Set Price</a>
+                <a href="/delete-product" class="text-gray-300 hover:text-white transition-colors">Delete Notifications</a>
+            </div>
+            <div class="md:hidden">
+                <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="relative z-10 px-4 py-8">
+        <div class="max-w-4xl mx-auto fade-in">
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-vermilion rounded-full mb-4">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                        <path d="M3 6h18l-2 13H5L3 6z"></path>
+                        <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        <line x1="10" y1="11" x2="10" y2="17"></line>
+                        <line x1="14" y1="11" x2="14" y2="17"></line>
+                    </svg>
+                </div>
+                <h1 class="font-kite text-3xl text-off-white mb-2">Your Notifications</h1>
+                <p class="text-gray-400">Managing notifications for: <span class="text-vermilion">{{ email }}</span></p>
+                <div class="w-24 h-1 bg-vermilion mx-auto rounded-full mt-4"></div>
+            </div>
+
+            {% if no_notifications %}
+            <!-- No Notifications Found -->
+            <div class="text-center">
+                <div class="bg-gray-800 bg-opacity-50 backdrop-blur-sm rounded-2xl p-8 border border-gray-700">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="1" class="mx-auto mb-4">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M12 6v6l4 2"></path>
+                    </svg>
+                    <h3 class="text-xl font-medium text-off-white mb-2">No Notifications Found</h3>
+                    <p class="text-gray-400 mb-6">There are no active notifications for <span class="text-vermilion">{{ email }}</span></p>
+                    <a href="{{ url_for('delete_product') }}" class="bg-vermilion hover:bg-red-600 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                        Try Another Email
+                    </a>
+                </div>
+            </div>
+            {% else %}
+            <!-- Notifications List -->
+            <div class="space-y-8">
+                <!-- Availability Notifications -->
+                {% if availability_notifications %}
+                <div class="bg-gray-800 bg-opacity-50 backdrop-blur-sm rounded-2xl p-6 border border-gray-700">
+                    <div class="flex items-center mb-6">
+                        <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center mr-3">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                                <line x1="3" y1="6" x2="21" y2="6"></line>
+                                <path d="M16 10a4 4 0 0 1-8 0"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-medium text-off-white">Availability Notifications</h3>
+                        <span class="ml-auto bg-blue-500 text-white text-xs px-2 py-1 rounded-full">{{ availability_notifications|length }}</span>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        {% for notification in availability_notifications %}
+                        <div class="notification-item bg-gray-700 bg-opacity-50 rounded-xl p-4 flex items-center justify-between">
+                            <div class="flex-1 mr-4">
+                                <a href="{{ notification[2] }}" target="_blank" class="text-blue-400 hover:text-blue-300 transition-colors font-medium block mb-2 line-clamp-2">
+                                    Product Link
+                                </a>
+                                <div class="flex items-center space-x-4 text-sm text-gray-400">
+                                    <div class="flex items-center space-x-1">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                            <circle cx="8.5" cy="7" r="4"></circle>
+                                            <path d="M20 8v6M23 11l-3 3-3-3"></path>
+                                        </svg>
+                                        <span>{{ notification[1] }}</span>
+                                    </div>
+                                    {% if notification[4] and notification[4] != '0' %}
+                                    <div class="flex items-center space-x-1">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M12 20v-6M6 20v-4m12 4v-8M6 9l6-9 6 9"></path>
+                                        </svg>
+                                        <span>Size: {{ notification[4] }}</span>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <form method="POST" action="{{ url_for('confirm_delete_notification') }}" class="inline">
+                                <input type="hidden" name="notification_id" value="{{ notification[0] }}">
+                                <input type="hidden" name="notification_type" value="availability">
+                                <button type="submit" class="delete-btn bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2" onclick="return confirm('Are you sure you want to delete this availability notification?')">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="3,6 5,6 21,6"></polyline>
+                                        <path d="m19,6v14a2,2 0 0,1 -2,2H7a2,2 0 0,1 -2,-2V6m3,0V4a2,2 0 0,1 2,-2h4a2,2 0 0,1 2,2v2"></path>
+                                    </svg>
+                                    <span>Delete</span>
+                                </button>
+                            </form>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Price Notifications -->
+                {% if price_notifications %}
+                <div class="bg-gray-800 bg-opacity-50 backdrop-blur-sm rounded-2xl p-6 border border-gray-700">
+                    <div class="flex items-center mb-6">
+                        <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mr-3">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                                <line x1="12" y1="1" x2="12" y2="23"></line>
+                                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-medium text-off-white">Price Notifications</h3>
+                        <span class="ml-auto bg-green-500 text-white text-xs px-2 py-1 rounded-full">{{ price_notifications|length }}</span>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        {% for notification in price_notifications %}
+                        <div class="notification-item bg-gray-700 bg-opacity-50 rounded-xl p-4 flex items-center justify-between">
+                            <div class="flex-1 mr-4">
+                                <a href="{{ notification[2] }}" target="_blank" class="text-green-400 hover:text-green-300 transition-colors font-medium block mb-2 line-clamp-2">
+                                    Product Link
+                                </a>
+                                <div class="flex items-center space-x-4 text-sm text-gray-400">
+                                    <div class="flex items-center space-x-1">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                            <circle cx="8.5" cy="7" r="4"></circle>
+                                            <path d="M20 8v6M23 11l-3 3-3-3"></path>
+                                        </svg>
+                                        <span>{{ notification[1] }}</span>
+                                    </div>
+                                    <div class="flex items-center space-x-1">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <line x1="12" y1="1" x2="12" y2="23"></line>
+                                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                                        </svg>
+                                        <span class="text-green-400 font-medium">Target: ₹{{ notification[3] }}</span>
+                                    </div>
+                                    {% if notification[4] and notification[4] != '0' %}
+                                    <div class="flex items-center space-x-1">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M12 20v-6M6 20v-4m12 4v-8M6 9l6-9 6 9"></path>
+                                        </svg>
+                                        <span>Size: {{ notification[4] }}</span>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <form method="POST" action="{{ url_for('confirm_delete_notification') }}" class="inline">
+                                <input type="hidden" name="notification_id" value="{{ notification[0] }}">
+                                <input type="hidden" name="notification_type" value="price">
+                                <button type="submit" class="delete-btn bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2" onclick="return confirm('Are you sure you want to delete this price notification?')">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="3,6 5,6 21,6"></polyline>
+                                        <path d="m19,6v14a2,2 0 0,1 -2,2H7a2,2 0 0,1 -2,-2V6m3,0V4a2,2 0 0,1 2,-2h4a2,2 0 0,1 2,2v2"></path>
+                                    </svg>
+                                    <span>Delete</span>
+                                </button>
+                            </form>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Actions -->
+                <div class="text-center pt-8 border-t border-gray-700">
+                    <div class="space-y-4">
+                        <a href="{{ url_for('delete_product') }}" class="inline-flex items-center justify-center bg-gray-700 hover:bg-gray-600 text-off-white font-medium py-3 px-6 rounded-xl transition-colors space-x-2">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                            </svg>
+                            <span>Try Another Email</span>
+                        </a>
+                        <div>
+                            <a href="{{ url_for('home') }}" class="text-gray-400 hover:text-off-white transition-colors text-sm">
+                                ← Return to Home
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

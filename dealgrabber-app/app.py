@@ -186,8 +186,10 @@ def add_price():
     return render_template("add_price.html", product_link=product_info.get("link", ""), shoesize=product_info.get("shoesize", ""), email=email)
 
 # ✅ UPDATED DELETE PRODUCT ROUTE - Now sends OTP instead of showing products directly
+
 @app.route("/delete-product", methods=["GET", "POST"])
 def delete_product():
+    """Entry point - Email collection only"""
     if request.method == "POST":
         email = request.form.get("email", "").strip()
         if not email:
@@ -204,49 +206,25 @@ def delete_product():
         # Send OTP to email
         success, message = send_otp_email(email)
         print(f"OTP send result: {success}, Message: {message}")  # DEBUG
-        print(f"OTP storage after send: {otp_storage}")  # DEBUG
         
         if success:
             session["pending_email"] = email
-            print(f"Set pending_email in session: {email}")  # DEBUG
             return redirect(url_for("verify_otp"))
         else:
             return render_template("delete_product.html", error=f"Failed to send OTP: {message}")
 
-    # Handle GET request with URL parameters (for success/error messages)
-    email = request.args.get("email", "")
-    success_msg = request.args.get("success", "")
-    error_msg = request.args.get("error", "")
-    
-    # If email is provided via GET, show notifications (after OTP verification)
-    if email:
-        db_handler = DatabaseHandler()
-        availability_notifications = db_handler.get_availability_notifications(email)
-        price_notifications = db_handler.get_price_notifications(email)
-        
-        return render_template("delete_product.html", 
-                             email=email, 
-                             availability_notifications=availability_notifications, 
-                             price_notifications=price_notifications,
-                             success=success_msg,
-                             error=error_msg)
-    
+    # GET request - show email entry form only
     return render_template("delete_product.html")
 
 @app.route("/verify-otp", methods=["GET", "POST"])
 def verify_otp():
+    """OTP verification page"""
     email = session.get("pending_email")
-    print(f"Email from session: {email}")  # DEBUG
-    print(f"Current OTP storage: {otp_storage}")  # DEBUG
-    
     if not email:
-        print("No pending email in session, redirecting to delete_product")  # DEBUG
         return redirect(url_for("delete_product"))
 
     if request.method == "POST":
         entered_otp = request.form.get("otp", "").strip()
-        print(f"Entered OTP: {entered_otp}")  # DEBUG
-        
         if not entered_otp:
             return render_template("verify_otp.html", email=email, error="Please enter the OTP.")
 
@@ -255,16 +233,41 @@ def verify_otp():
         print(f"OTP validation result: {is_valid}, Message: {message}")  # DEBUG
         
         if is_valid:
-            # OTP is correct, redirect to delete_product with email parameter
+            # OTP is correct, redirect to delete list page
             session.pop("pending_email", None)
-            return redirect(url_for("delete_product", email=email, success="Email verified successfully!"))
+            session["verified_email"] = email  # Store verified email
+            return redirect(url_for("delete_list"))
         else:
             return render_template("verify_otp.html", email=email, error=message)
 
     return render_template("verify_otp.html", email=email)
 
+@app.route("/delete-list")
+def delete_list():
+    """Show notifications list for verified email"""
+    email = session.get("verified_email")
+    if not email:
+        return redirect(url_for("delete_product"))
+
+    # Fetch notifications for the verified email
+    db_handler = DatabaseHandler()
+    availability_notifications = db_handler.get_availability_notifications(email)
+    price_notifications = db_handler.get_price_notifications(email)
+
+    # Check if any notifications exist
+    if not availability_notifications and not price_notifications:
+        return render_template("delete_list.html", 
+                             email=email, 
+                             no_notifications=True)
+
+    return render_template("delete_list.html", 
+                         email=email,
+                         availability_notifications=availability_notifications,
+                         price_notifications=price_notifications)
+
 @app.route("/resend-otp", methods=["POST"])
 def resend_otp():
+    """Resend OTP"""
     email = session.get("pending_email")
     if not email:
         return redirect(url_for("delete_product"))
@@ -277,15 +280,24 @@ def resend_otp():
 
 @app.route("/confirm-delete-notification", methods=["POST"])
 def confirm_delete_notification():
-    db_handler = DatabaseHandler()
-    email = request.form.get("email", "").strip()
+    """Handle individual notification deletion"""
+    # Check if user has verified email in session
+    email = session.get("verified_email")
+    if not email:
+        return redirect(url_for("delete_product"))
+
     notification_id = request.form.get("notification_id", "").strip()
     notification_type = request.form.get("notification_type", "").strip()
 
-    if not email or not notification_id:
-        return redirect(url_for("delete_product", email=email, error="Invalid request."))
+    if not notification_id or not notification_type:
+        return redirect(url_for("delete_list"))
 
+    # Delete the notification
+    db_handler = DatabaseHandler()
     success = db_handler.delete_request(notification_id, email, notification_type)
+
+    # Clear verified email from session after deletion
+    session.pop("verified_email", None)
 
     if success:
         return render_template("delete_confirmation.html", 
@@ -293,21 +305,10 @@ def confirm_delete_notification():
                              message="Notification deleted successfully!",
                              email=email)
     else:
-        return redirect(url_for("delete_product", email=email, error="Failed to delete notification."))
-
-@app.route("/debug-notifications/<email>")
-def debug_notifications(email):
-    db_handler = DatabaseHandler()
-    availability = db_handler.get_availability_notifications(email)
-    price = db_handler.get_price_notifications(email)
-    
-    return {
-        "email": email,
-        "availability_count": len(availability) if availability else 0,
-        "price_count": len(price) if price else 0,
-        "availability_data": availability,
-        "price_data": price
-    }
+        return render_template("delete_confirmation.html", 
+                             success=False, 
+                             message="Failed to delete notification. Please try again.",
+                             email=email)
 
 # Fixed OTP functions
 def generate_otp():
