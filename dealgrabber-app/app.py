@@ -213,9 +213,26 @@ def delete_product():
         else:
             return render_template("delete_product.html", error=f"Failed to send OTP: {message}")
 
+    # Handle GET request with URL parameters (for success/error messages)
+    email = request.args.get("email", "")
+    success_msg = request.args.get("success", "")
+    error_msg = request.args.get("error", "")
+    
+    # If email is provided via GET, show notifications (after OTP verification)
+    if email:
+        db_handler = DatabaseHandler()
+        availability_notifications = db_handler.get_availability_notifications(email)
+        price_notifications = db_handler.get_price_notifications(email)
+        
+        return render_template("delete_product.html", 
+                             email=email, 
+                             availability_notifications=availability_notifications, 
+                             price_notifications=price_notifications,
+                             success=success_msg,
+                             error=error_msg)
+    
     return render_template("delete_product.html")
 
-# ✅ NEW ROUTE - OTP Verification
 @app.route("/verify-otp", methods=["GET", "POST"])
 def verify_otp():
     email = session.get("pending_email")
@@ -238,24 +255,14 @@ def verify_otp():
         print(f"OTP validation result: {is_valid}, Message: {message}")  # DEBUG
         
         if is_valid:
-            # OTP is correct, show notifications
+            # OTP is correct, redirect to delete_product with email parameter
             session.pop("pending_email", None)
-            
-            db_handler = DatabaseHandler()
-            availability_notifications = db_handler.get_availability_notifications(email)
-            price_notifications = db_handler.get_price_notifications(email)
-            
-            return render_template("delete_product.html", 
-                                 email=email, 
-                                 availability_notifications=availability_notifications, 
-                                 price_notifications=price_notifications,
-                                 success="Email verified successfully!")
+            return redirect(url_for("delete_product", email=email, success="Email verified successfully!"))
         else:
             return render_template("verify_otp.html", email=email, error=message)
 
     return render_template("verify_otp.html", email=email)
 
-# ✅ NEW ROUTE - Resend OTP
 @app.route("/resend-otp", methods=["POST"])
 def resend_otp():
     email = session.get("pending_email")
@@ -276,13 +283,72 @@ def confirm_delete_notification():
     notification_type = request.form.get("notification_type", "").strip()
 
     if not email or not notification_id:
-        return redirect(url_for("delete_product", error="Invalid request."))
+        return redirect(url_for("delete_product", email=email, error="Invalid request."))
 
     success = db_handler.delete_request(notification_id, email, notification_type)
 
     if success:
-        return redirect(url_for("delete_product", email=email, success="Notification deleted successfully."))
-    return redirect(url_for("delete_product", email=email, error="Failed to delete notification."))
+        return render_template("delete_confirmation.html", 
+                             success=True, 
+                             message="Notification deleted successfully!",
+                             email=email)
+    else:
+        return redirect(url_for("delete_product", email=email, error="Failed to delete notification."))
 
+# Fixed OTP functions
+def generate_otp():
+    """Generate a random 6-digit OTP"""
+    return str(random.randint(100000, 999999))
+
+def is_otp_valid(email, entered_otp):
+    """Check if the entered OTP is valid for the given email"""
+    if email not in otp_storage:
+        return False, "No OTP found for this email"
+    
+    stored_data = otp_storage[email]
+    
+    # Check if OTP has expired
+    if datetime.now() > stored_data["timestamp"] + timedelta(minutes=OTP_EXPIRY_MINUTES):
+        del otp_storage[email]  # Clean up expired OTP
+        return False, "OTP has expired. Please request a new one."
+    
+    # Check attempts limit
+    if stored_data["attempts"] >= MAX_OTP_ATTEMPTS:
+        del otp_storage[email]  # Clean up after max attempts
+        return False, "Maximum OTP attempts exceeded. Please request a new one."
+    
+    # Check if OTP matches
+    if stored_data["otp"] == entered_otp:
+        del otp_storage[email]  # Clean up successful OTP
+        return True, "OTP verified successfully"
+    else:
+        stored_data["attempts"] += 1
+        return False, f"Invalid OTP. {MAX_OTP_ATTEMPTS - stored_data['attempts']} attempts remaining."
+
+def send_otp_email(email):
+    """Send OTP to the given email address"""
+    try:
+        otp = generate_otp()
+        
+        # Store OTP with timestamp
+        otp_storage[email] = {
+            "otp": otp,
+            "timestamp": datetime.now(),
+            "attempts": 0
+        }
+        
+        print(f"Generated OTP for {email}: {otp}")  # DEBUG - Remove in production
+        
+        # Send email using existing SMTP system
+        smtp_client = SMTPClient()
+        otp_mail = OTPMail(smtp_client, email, otp)
+        otp_mail.send_otp_mail()
+        smtp_client.close()
+        
+        print(f"OTP email sent successfully to {email}")  # DEBUG
+        return True, "OTP sent successfully"
+    except Exception as e:
+        print(f"Error sending OTP email: {str(e)}")  # DEBUG
+        return False, f"Failed to send OTP: {str(e)}"
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
