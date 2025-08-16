@@ -7,7 +7,6 @@ RUN apt-get update && apt-get install -y \
     unzip \
     xvfb \
     libxi6 \
-    libgconf-2-4 \
     libnss3 \
     libgbm1 \
     libxcb1 \
