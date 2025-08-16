@@ -110,6 +110,15 @@
         </div>
     </nav>
 
+    <div class="bg-yellow-900 border border-yellow-700 rounded-xl p-4 mb-6 text-sm">
+            <h4 class="text-yellow-300 font-bold mb-2">Debug Info:</h4>
+            <p class="text-yellow-200">Email: {{ email or 'None' }}</p>
+            <p class="text-yellow-200">Availability notifications: {{ availability_notifications|length if availability_notifications else 'None' }}</p>
+            <p class="text-yellow-200">Price notifications: {{ price_notifications|length if price_notifications else 'None' }}</p>
+            <p class="text-yellow-200">Success: {{ success or 'None' }}</p>
+            <p class="text-yellow-200">Error: {{ error or 'None' }}</p>
+    </div>
+
     <!-- Main Content -->
     <div class="relative z-10 px-4 py-8">
         <div class="max-w-4xl mx-auto">
