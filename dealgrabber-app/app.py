@@ -295,6 +295,20 @@ def confirm_delete_notification():
     else:
         return redirect(url_for("delete_product", email=email, error="Failed to delete notification."))
 
+@app.route("/debug-notifications/<email>")
+def debug_notifications(email):
+    db_handler = DatabaseHandler()
+    availability = db_handler.get_availability_notifications(email)
+    price = db_handler.get_price_notifications(email)
+    
+    return {
+        "email": email,
+        "availability_count": len(availability) if availability else 0,
+        "price_count": len(price) if price else 0,
+        "availability_data": availability,
+        "price_data": price
+    }
+
 # Fixed OTP functions
 def generate_otp():
     """Generate a random 6-digit OTP"""
@@ -350,5 +364,6 @@ def send_otp_email(email):
     except Exception as e:
         print(f"Error sending OTP email: {str(e)}")  # DEBUG
         return False, f"Failed to send OTP: {str(e)}"
+
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
