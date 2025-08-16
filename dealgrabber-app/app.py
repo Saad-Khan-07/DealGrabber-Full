@@ -203,8 +203,12 @@ def delete_product():
 
         # Send OTP to email
         success, message = send_otp_email(email)
+        print(f"OTP send result: {success}, Message: {message}")  # DEBUG
+        print(f"OTP storage after send: {otp_storage}")  # DEBUG
+        
         if success:
-            session["pending_email"] = email  # Store email in session for OTP verification
+            session["pending_email"] = email
+            print(f"Set pending_email in session: {email}")  # DEBUG
             return redirect(url_for("verify_otp"))
         else:
             return render_template("delete_product.html", error=f"Failed to send OTP: {message}")
@@ -215,20 +219,27 @@ def delete_product():
 @app.route("/verify-otp", methods=["GET", "POST"])
 def verify_otp():
     email = session.get("pending_email")
+    print(f"Email from session: {email}")  # DEBUG
+    print(f"Current OTP storage: {otp_storage}")  # DEBUG
+    
     if not email:
+        print("No pending email in session, redirecting to delete_product")  # DEBUG
         return redirect(url_for("delete_product"))
 
     if request.method == "POST":
         entered_otp = request.form.get("otp", "").strip()
+        print(f"Entered OTP: {entered_otp}")  # DEBUG
+        
         if not entered_otp:
             return render_template("verify_otp.html", email=email, error="Please enter the OTP.")
 
         # Verify OTP
         is_valid, message = is_otp_valid(email, entered_otp)
+        print(f"OTP validation result: {is_valid}, Message: {message}")  # DEBUG
         
         if is_valid:
             # OTP is correct, show notifications
-            session.pop("pending_email", None)  # Clear pending email
+            session.pop("pending_email", None)
             
             db_handler = DatabaseHandler()
             availability_notifications = db_handler.get_availability_notifications(email)

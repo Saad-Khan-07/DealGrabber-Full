@@ -15,9 +15,10 @@
         .border-vermilion { border-color: #E34234; }
         
         .floating-cart {
-            position: absolute;
+            position: fixed;
             opacity: 0.1;
             animation: float 6s ease-in-out infinite;
+            z-index: 1;
         }
         
         @keyframes float {
@@ -74,7 +75,7 @@
         }
     </style>
 </head>
-<body class="bg-charcoal text-off-white min-h-screen relative overflow-hidden">
+<body class="bg-charcoal text-off-white min-h-screen relative">
     <!-- Floating Cart Background -->
     <div class="floating-cart cart-1">
         <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#E34234" stroke-width="1">
@@ -107,21 +108,21 @@
 
     <!-- Navigation -->
     <nav class="relative z-20 py-6">
-    <div class="max-w-7xl mx-auto px-4 flex items-center justify-between">
-        <div class="font-kite text-2xl text-red-500">DEALGRABBER</div>
-        <div class="hidden md:flex space-x-8">
-            <a href="/search-product" class="text-gray-300 hover:text-white transition-colors">Search</a>
-            <a href="/add-availability" class="text-gray-300 hover:text-white transition-colors">Set Availability</a>
-            <a href="/add-price" class="text-gray-300 hover:text-white transition-colors">Set Price</a>
-            <a href="/delete-product" class="text-gray-300 hover:text-white transition-colors">Delete Notifications</a>
+        <div class="max-w-7xl mx-auto px-4 flex items-center justify-between">
+            <div class="font-kite text-2xl text-red-500">DEALGRABBER</div>
+            <div class="hidden md:flex space-x-8">
+                <a href="/search-product" class="text-gray-300 hover:text-white transition-colors">Search</a>
+                <a href="/add-availability" class="text-gray-300 hover:text-white transition-colors">Set Availability</a>
+                <a href="/add-price" class="text-gray-300 hover:text-white transition-colors">Set Price</a>
+                <a href="/delete-product" class="text-gray-300 hover:text-white transition-colors">Delete Notifications</a>
+            </div>
+            <div class="md:hidden">
+                <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </div>
         </div>
-        <div class="md:hidden">
-            <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-            </svg>
-        </div>
-    </div>
-</nav>
+    </nav>
 
     <!-- Main Content -->
     <div class="relative z-10 px-4 py-8">
@@ -139,9 +140,9 @@
                         <!-- Product Image -->
                         <div class="relative overflow-hidden rounded-t-xl">
                             <img 
-                                src="{{ product.image_link }}" 
+                                src="https://rukminim2.flixcart.com/image/612/612/xif0q/shoe/7/z/r/8-white-leafy-8-urbanbox-white-original-imagvgf4cuzs2hrw.jpeg" 
                                 class="w-full h-72 object-cover product-image" 
-                                alt="{{ product.title }}"
+                                alt="BARREDA IKD Sneakers For Men"
                                 onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNmI3MjgwIiBzdHJva2Utd2lkdGg9IjIiPjxyZWN0IHg9IjMiIHk9IjMiIHdpZHRoPSIxOCIgaGVpZ2h0PSIxOCIgcng9IjIiIHJ5PSIyIi8+PGNpcmNsZSBjeD0iOC41IiBjeT0iOC41IiByPSIxLjUiLz48cG9seWxpbmUgcG9pbnRzPSI5LDIxIDIxLDkgMTMsOSIvPjwvc3ZnPg=='"
                             >
                             <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
@@ -149,15 +150,15 @@
                         
                         <!-- Product Details -->
                         <div class="p-6 text-center">
-                            <h2 class="text-xl font-medium text-off-white mb-4 line-clamp-2">{{ product.title }}</h2>
+                            <h2 class="text-xl font-medium text-off-white mb-4 line-clamp-2">BARREDA IKD Sneakers For Men</h2>
                             <div class="mb-6">
-                                <p class="text-3xl font-bold text-vermilion price-pulse">{{ product.price }}</p>
+                                <p class="text-3xl font-bold text-vermilion price-pulse">₹3,180</p>
                                 <p class="text-sm text-gray-400 mt-1">Current price on Flipkart</p>
                             </div>
                             
                             <!-- View Product Button -->
                             <a 
-                                href="{{ product.link }}" 
+                                href="#" 
                                 target="_blank" 
                                 class="inline-flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-105 hover:shadow-lg w-full mb-4"
                             >
@@ -177,7 +178,7 @@
             <div class="max-w-lg mx-auto space-y-4 mb-8">
                 <div class="grid md:grid-cols-2 gap-4">
                     <a 
-                        href="{{ url_for('add_availability') }}" 
+                        href="/add-availability" 
                         class="action-btn bg-blue-500 hover:bg-blue-600 text-white font-medium py-4 px-6 rounded-xl transition-all duration-200 transform hover:scale-105 flex items-center justify-center space-x-3"
                     >
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -189,7 +190,7 @@
                     </a>
                     
                     <a 
-                        href="{{ url_for('add_price') }}" 
+                        href="/add-price" 
                         class="action-btn bg-green-500 hover:bg-green-600 text-white font-medium py-4 px-6 rounded-xl transition-all duration-200 transform hover:scale-105 flex items-center justify-center space-x-3"
                     >
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -232,9 +233,9 @@
             </div>
 
             <!-- Back Button -->
-            <div class="text-center">
+            <div class="text-center pb-8">
                 <a 
-                    href="{{ url_for('select_product_route') }}" 
+                    href="/select-product" 
                     class="inline-flex items-center justify-center bg-gray-700 hover:bg-gray-600 text-off-white font-medium py-3 px-6 rounded-xl transition-all duration-200"
                 >
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mr-2">
