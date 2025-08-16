@@ -233,9 +233,10 @@ def verify_otp():
         print(f"OTP validation result: {is_valid}, Message: {message}")  # DEBUG
         
         if is_valid:
-            # OTP is correct, redirect to delete list page
-            session.pop("pending_email", None)
-            session["verified_email"] = email  # Store verified email
+            # ✅ Set verified_email BEFORE removing pending_email
+            session["verified_email"] = email
+            session.pop("pending_email", None)  # Clean up
+            print(f"✅ OTP verified successfully. Set verified_email: {email}")  # DEBUG
             return redirect(url_for("delete_list"))
         else:
             return render_template("verify_otp.html", email=email, error=message)
